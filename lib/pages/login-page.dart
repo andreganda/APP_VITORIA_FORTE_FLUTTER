@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:brasil_fields/brasil_fields.dart';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:vitoria_forte/Model/Usuario.dart';
@@ -15,6 +17,7 @@ class _LoginPageState extends State<LoginPage> {
   var _login = TextEditingController();
   var _senha = TextEditingController();
   bool _passwordVisible = false;
+  bool _callCircular = false;
   final focusNode = FocusNode();
 
   @override
@@ -38,6 +41,11 @@ class _LoginPageState extends State<LoginPage> {
               padding: EdgeInsets.symmetric(horizontal: 15),
               child: TextField(
                 controller: _login,
+                inputFormatters: [
+                  // obrigatório
+                  FilteringTextInputFormatter.digitsOnly,
+                  CpfInputFormatter(),
+                ],
                 decoration: InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: 'CPF',
@@ -86,12 +94,19 @@ class _LoginPageState extends State<LoginPage> {
                   color: Colors.red, borderRadius: BorderRadius.circular(20)),
               child: FlatButton(
                 onPressed: () {
+                  setState(() {
+                    _callCircular = true;
+                  });
                   logar(this._login.text, this._senha.text, context);
                 },
-                child: Text(
-                  'Logar',
-                  style: TextStyle(color: Colors.white, fontSize: 25),
-                ),
+                child: _callCircular
+                    ? CircularProgressIndicator(
+                        backgroundColor: Colors.grey,
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.black))
+                    : Text(
+                        'Logar',
+                        style: TextStyle(color: Colors.white, fontSize: 25),
+                      ),
               ),
             ),
             SizedBox(
@@ -111,59 +126,65 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
   }
-}
 
-Future logar(String login, String senha, BuildContext context) async {
-  if (false) {
-    showAlertDialog(context, "INSIRA UM LOGIN E/OU SENHA");
-  } else {
-    // _carregando(context, 0);
-    // var response = await http.get(Uri.encodeFull("${baseUrl}Login"),
-    //     headers: {"Accept": "application/json"});
-    // if (response.body != null) {
-    //   print(response.body);
-    // }
+  Future logar(String login, String senha, BuildContext context) async {
+    try {
+      if (false) {
+        showAlertDialog(context, "INSIRA UM LOGIN E/OU SENHA");
+      } else {
+        // _carregando(context, 0);
+        // var response = await http.get(Uri.encodeFull("${baseUrl}Login"),
+        //     headers: {"Accept": "application/json"});
+        // if (response.body != null) {
+        //   print(response.body);
+        // }
 
-    final response = await http.post(
-      Uri.parse('${baseUrl}Login'),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: jsonEncode(<String, String>{
-        'Cpf': login,
-        'Senha': senha,
-      }),
-    );
+        final response = await http.post(
+          Uri.parse('${baseUrl}Login'),
+          headers: <String, String>{
+            'Content-Type': 'application/json; charset=UTF-8',
+          },
+          body: jsonEncode(<String, String>{
+            'Cpf': login,
+            'Senha': senha,
+          }),
+        );
 
-    if (response.statusCode == 200) {
-      Map<String, dynamic> userMap = jsonDecode(response.body);
-      Usuario user = new Usuario();
-      user = Usuario.fromJson(userMap);
-      print(response.body);
-    } else {
-      // throw Exception('Failed to create album.');
+        if (response.statusCode == 200) {
+          Map<String, dynamic> userMap = jsonDecode(response.body);
+          Usuario user = new Usuario();
+          user = Usuario.fromJson(userMap);
+          print(response.body);
+        } else {
+          // throw Exception('Failed to create album.');
+        }
+      }
+    } catch (e) {
+      setState(() {
+        _callCircular = false;
+      });
     }
   }
-}
 
-showAlertDialog(BuildContext context, String text) {
-  Widget okButton = FlatButton(
-    child: Text("OK"),
-    onPressed: () {
-      Navigator.of(context).pop();
-    },
-  );
-  AlertDialog alerta = AlertDialog(
-    title: Text("ATENÇÃO"),
-    content: Text(text),
-    actions: [
-      okButton,
-    ],
-  );
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return alerta;
-    },
-  );
+  showAlertDialog(BuildContext context, String text) {
+    Widget okButton = FlatButton(
+      child: Text("OK"),
+      onPressed: () {
+        Navigator.of(context).pop();
+      },
+    );
+    AlertDialog alerta = AlertDialog(
+      title: Text("ATENÇÃO"),
+      content: Text(text),
+      actions: [
+        okButton,
+      ],
+    );
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alerta;
+      },
+    );
+  }
 }

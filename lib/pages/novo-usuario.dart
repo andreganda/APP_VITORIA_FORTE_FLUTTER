@@ -1,5 +1,7 @@
+import 'package:brasil_fields/brasil_fields.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 
 class NovoUsuarioPage extends StatefulWidget {
   @override
@@ -21,12 +23,16 @@ class _NovoUsuarioPageState extends State<NovoUsuarioPage> {
   String _complemento;
   String _senha;
   String _confirmarSenha;
+  bool _callCircular = false;
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   Widget _buildCpf() {
     return TextFormField(
-      inputFormatters: [],
+      inputFormatters: [
+        FilteringTextInputFormatter.digitsOnly,
+        CpfInputFormatter(),
+      ],
       keyboardType: TextInputType.number,
       decoration: InputDecoration(
         labelText: 'CPF',
@@ -35,7 +41,7 @@ class _NovoUsuarioPageState extends State<NovoUsuarioPage> {
         if (value.isEmpty) {
           return 'campo obrigatório';
         } else {
-          if (value.length < 11 || value.length > 11) {
+          if (value.length != 14) {
             return 'CPF deve possuir 11 digitos';
           }
         }
@@ -64,6 +70,12 @@ class _NovoUsuarioPageState extends State<NovoUsuarioPage> {
 
   Widget _buildDatanascimento() {
     return TextFormField(
+      inputFormatters: [
+        // obrigatório
+        FilteringTextInputFormatter.digitsOnly,
+        DataInputFormatter(),
+      ],
+      keyboardType: TextInputType.number,
       decoration: InputDecoration(
         labelText: 'Data Nascimento',
       ),
@@ -80,6 +92,12 @@ class _NovoUsuarioPageState extends State<NovoUsuarioPage> {
 
   Widget _buildTelefone() {
     return TextFormField(
+      inputFormatters: [
+        // obrigatório
+        FilteringTextInputFormatter.digitsOnly,
+        TelefoneInputFormatter(),
+      ],
+      keyboardType: TextInputType.number,
       decoration: InputDecoration(
         labelText: 'Telefone',
       ),
@@ -281,6 +299,7 @@ class _NovoUsuarioPageState extends State<NovoUsuarioPage> {
                 SizedBox(
                   height: 30,
                 ),
+                if (_callCircular) CircularProgressIndicator(),
               ],
             ),
           ),
@@ -293,6 +312,10 @@ class _NovoUsuarioPageState extends State<NovoUsuarioPage> {
           } else {
             _formKey.currentState.save();
             print(_cpf);
+
+            setState(() {
+              _callCircular = true;
+            });
           }
         },
         child: const Icon(Icons.send),
@@ -302,5 +325,3 @@ class _NovoUsuarioPageState extends State<NovoUsuarioPage> {
     );
   }
 }
-
-Function EnviarForm() {}
