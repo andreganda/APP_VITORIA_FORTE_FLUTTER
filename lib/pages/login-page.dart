@@ -41,6 +41,7 @@ class _LoginPageState extends State<LoginPage> {
               padding: EdgeInsets.symmetric(horizontal: 15),
               child: TextField(
                 controller: _login,
+                keyboardType: TextInputType.number,
                 inputFormatters: [
                   // obrigatório
                   FilteringTextInputFormatter.digitsOnly,
