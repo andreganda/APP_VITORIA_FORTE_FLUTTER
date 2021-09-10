@@ -16,123 +16,135 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   var _login = TextEditingController();
   var _senha = TextEditingController();
+  var _cpfRecuperar = TextEditingController();
+
   bool _passwordVisible = false;
   bool _callCircular = false;
+  bool _esqueciSenha = false;
   final focusNode = FocusNode();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: SingleChildScrollView(
-        child: Column(
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.only(top: 60.0),
-              child: Center(
-                child: Container(
-                    width: 200,
-                    height: 150,
-                    child: Image.asset('asset/images/logo.png')),
-              ),
-            ),
-            Padding(
-              //padding: const EdgeInsets.only(left:15.0,right: 15.0,top:0,bottom: 0),
-              padding: EdgeInsets.symmetric(horizontal: 15),
-              child: TextField(
-                controller: _login,
-                keyboardType: TextInputType.number,
-                inputFormatters: [
-                  // obrigatório
-                  FilteringTextInputFormatter.digitsOnly,
-                  CpfInputFormatter(),
-                ],
-                decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'CPF',
-                    hintText: 'Entre com seu cpf'),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(
-                  left: 15.0, right: 15.0, top: 15, bottom: 0),
-              //padding: EdgeInsets.symmetric(horizontal: 15),
-              child: TextField(
-                controller: _senha,
-                obscureText: !this._passwordVisible,
-                decoration: InputDecoration(
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        // Based on passwordVisible state choose the icon
-                        _passwordVisible
-                            ? Icons.visibility
-                            : Icons.visibility_off,
-                        color: Theme.of(context).primaryColorDark,
-                      ),
-                      onPressed: () {
-                        FocusScope.of(context).unfocus();
-                        setState(() {
-                          _passwordVisible = !_passwordVisible;
-                        });
-                      },
+      body: _esqueciSenha
+          ? _buildContainerRecuperarSenha()
+          : SingleChildScrollView(
+              child: Column(
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.only(top: 60.0),
+                    child: Center(
+                      child: Container(
+                          width: 200,
+                          height: 150,
+                          child: Image.asset('asset/images/logo.png')),
                     ),
-                    border: OutlineInputBorder(),
-                    labelText: 'SENHA',
-                    hintText: 'Entre com sua senha'),
+                  ),
+                  Padding(
+                    //padding: const EdgeInsets.only(left:15.0,right: 15.0,top:0,bottom: 0),
+                    padding: EdgeInsets.symmetric(horizontal: 15),
+                    child: TextField(
+                      controller: _login,
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [
+                        // obrigatório
+                        FilteringTextInputFormatter.digitsOnly,
+                        CpfInputFormatter(),
+                      ],
+                      decoration: InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: 'CPF',
+                          hintText: 'Entre com seu cpf'),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(
+                        left: 15.0, right: 15.0, top: 15, bottom: 0),
+                    //padding: EdgeInsets.symmetric(horizontal: 15),
+                    child: TextField(
+                      controller: _senha,
+                      obscureText: !this._passwordVisible,
+                      decoration: InputDecoration(
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              // Based on passwordVisible state choose the icon
+                              _passwordVisible
+                                  ? Icons.visibility
+                                  : Icons.visibility_off,
+                              color: Theme.of(context).primaryColorDark,
+                            ),
+                            onPressed: () {
+                              FocusScope.of(context).unfocus();
+                              setState(() {
+                                _passwordVisible = !_passwordVisible;
+                              });
+                            },
+                          ),
+                          border: OutlineInputBorder(),
+                          labelText: 'SENHA',
+                          hintText: 'Entre com sua senha'),
+                    ),
+                  ),
+                  FlatButton(
+                    onPressed: () {
+                      setState(() {
+                        _esqueciSenha = true;
+                      });
+                    },
+                    child: Text(
+                      'Esqueci minha senha',
+                      style: TextStyle(color: Colors.black, fontSize: 15),
+                    ),
+                  ),
+                  Container(
+                    height: 50,
+                    width: 250,
+                    decoration: BoxDecoration(
+                        color: Colors.red,
+                        borderRadius: BorderRadius.circular(20)),
+                    child: FlatButton(
+                      onPressed: () {
+                        logar(this._login.text, this._senha.text, context);
+                      },
+                      child: _callCircular
+                          ? CircularProgressIndicator(
+                              backgroundColor: Colors.grey,
+                              valueColor:
+                                  AlwaysStoppedAnimation<Color>(Colors.black))
+                          : Text(
+                              'Logar',
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 25),
+                            ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 130,
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (_) => NovoUsuarioPage()));
+                    },
+                    child: Text(
+                      'Novo usuário? Criar conta',
+                    ),
+                  )
+                ],
               ),
             ),
-            FlatButton(
-              onPressed: () {},
-              child: Text(
-                'Esqueci minha senha',
-                style: TextStyle(color: Colors.black, fontSize: 15),
-              ),
-            ),
-            Container(
-              height: 50,
-              width: 250,
-              decoration: BoxDecoration(
-                  color: Colors.red, borderRadius: BorderRadius.circular(20)),
-              child: FlatButton(
-                onPressed: () {
-                  setState(() {
-                    _callCircular = true;
-                  });
-                  logar(this._login.text, this._senha.text, context);
-                },
-                child: _callCircular
-                    ? CircularProgressIndicator(
-                        backgroundColor: Colors.grey,
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.black))
-                    : Text(
-                        'Logar',
-                        style: TextStyle(color: Colors.white, fontSize: 25),
-                      ),
-              ),
-            ),
-            SizedBox(
-              height: 130,
-            ),
-            GestureDetector(
-              onTap: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (_) => NovoUsuarioPage()));
-              },
-              child: Text(
-                'Novo usuário? Criar conta',
-              ),
-            )
-          ],
-        ),
-      ),
     );
   }
 
   Future logar(String login, String senha, BuildContext context) async {
     try {
-      if (false) {
+      if (login.isEmpty || senha.isEmpty) {
         showAlertDialog(context, "INSIRA UM LOGIN E/OU SENHA");
       } else {
+        setState(() {
+          _callCircular = true;
+        });
         // _carregando(context, 0);
         // var response = await http.get(Uri.encodeFull("${baseUrl}Login"),
         //     headers: {"Accept": "application/json"});
@@ -186,6 +198,117 @@ class _LoginPageState extends State<LoginPage> {
       builder: (BuildContext context) {
         return alerta;
       },
+    );
+  }
+
+  Widget _buildContainerRecuperarSenha() {
+    return Center(
+      child: Container(
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                'INSIRA SEU EMAIL',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            _buildEmail(),
+            SizedBox(
+              height: 30,
+            ),
+            Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                    height: 30,
+                    width: 100,
+                    decoration: BoxDecoration(
+                      color: Colors.red,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    // ignore: deprecated_member_use
+                    child: FlatButton(
+                      onPressed: () {
+                        if (_cpfRecuperar.value.text.isEmpty) {
+                          showAlertDialog(context,
+                              "Insira um cpf para recuperação de senha");
+                        } else {
+                          if (_cpfRecuperar.value.text.length != 14) {
+                            showAlertDialog(context,
+                                "Insira um cpf válido para recuperação de senha");
+                          }
+                        }
+                      },
+                      child: Text(
+                        'Enviar',
+                        style: TextStyle(color: Colors.white, fontSize: 15),
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    width: 5,
+                  ),
+                  Container(
+                    height: 30,
+                    width: 100,
+                    decoration: BoxDecoration(
+                      color: Colors.black,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    // ignore: deprecated_member_use
+                    child: FlatButton(
+                      onPressed: () {
+                        setState(() {
+                          _esqueciSenha = false;
+                        });
+                      },
+                      child: Text(
+                        'Voltar',
+                        style: TextStyle(color: Colors.white, fontSize: 15),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        height: 300,
+        width: 300,
+        decoration: BoxDecoration(
+          color: Colors.amberAccent,
+          border: Border.all(
+              color: Colors.black, // Set border color
+              width: 3.0),
+          borderRadius: BorderRadius.circular(20),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEmail() {
+    return Padding(
+      padding:
+          const EdgeInsets.only(left: 15.0, right: 15.0, top: 15, bottom: 0),
+      child: Center(
+        child: TextFormField(
+          inputFormatters: [
+            FilteringTextInputFormatter.digitsOnly,
+            CpfInputFormatter(),
+          ],
+          keyboardType: TextInputType.number,
+          controller: _cpfRecuperar,
+          decoration: InputDecoration(
+            labelText: 'CPF',
+          ),
+        ),
+      ),
     );
   }
 }
