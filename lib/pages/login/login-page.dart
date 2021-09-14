@@ -5,7 +5,8 @@ import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:vitoria_forte/Model/Usuario.dart';
-import 'package:vitoria_forte/pages/novo-usuario.dart';
+import 'package:vitoria_forte/pages/index.dart';
+import 'package:vitoria_forte/pages/login/novo-usuario.dart';
 import 'package:vitoria_forte/constants.dart';
 
 class LoginPage extends StatefulWidget {
@@ -46,6 +47,8 @@ class _LoginPageState extends State<LoginPage> {
                     padding: EdgeInsets.symmetric(horizontal: 15),
                     child: TextField(
                       controller: _login,
+                      textInputAction:
+                          TextInputAction.next, // Moves focus to next.
                       keyboardType: TextInputType.number,
                       inputFormatters: [
                         // obrigatório
@@ -61,8 +64,10 @@ class _LoginPageState extends State<LoginPage> {
                   Padding(
                     padding: const EdgeInsets.only(
                         left: 15.0, right: 15.0, top: 15, bottom: 0),
-                    //padding: EdgeInsets.symmetric(horizontal: 15),
                     child: TextField(
+                      onSubmitted: (value) {
+                        logar(this._login.text, this._senha.text, context);
+                      },
                       controller: _senha,
                       obscureText: !this._passwordVisible,
                       decoration: InputDecoration(
@@ -145,6 +150,10 @@ class _LoginPageState extends State<LoginPage> {
         setState(() {
           _callCircular = true;
         });
+
+        Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) => new IndexPage()));
+
         // _carregando(context, 0);
         // var response = await http.get(Uri.encodeFull("${baseUrl}Login"),
         //     headers: {"Accept": "application/json"});
@@ -152,25 +161,25 @@ class _LoginPageState extends State<LoginPage> {
         //   print(response.body);
         // }
 
-        final response = await http.post(
-          Uri.parse('${baseUrl}Login'),
-          headers: <String, String>{
-            'Content-Type': 'application/json; charset=UTF-8',
-          },
-          body: jsonEncode(<String, String>{
-            'Cpf': login,
-            'Senha': senha,
-          }),
-        );
+        // final response = await http.post(
+        //   Uri.parse('${baseUrl}Login'),
+        //   headers: <String, String>{
+        //     'Content-Type': 'application/json; charset=UTF-8',
+        //   },
+        //   body: jsonEncode(<String, String>{
+        //     'Cpf': login,
+        //     'Senha': senha,
+        //   }),
+        // );
 
-        if (response.statusCode == 200) {
-          Map<String, dynamic> userMap = jsonDecode(response.body);
-          Usuario user = new Usuario();
-          user = Usuario.fromJson(userMap);
-          print(response.body);
-        } else {
-          // throw Exception('Failed to create album.');
-        }
+        // if (response.statusCode == 200) {
+        //   Map<String, dynamic> userMap = jsonDecode(response.body);
+        //   Usuario user = new Usuario();
+        //   user = Usuario.fromJson(userMap);
+        //   print(response.body);
+        // } else {
+        //   // throw Exception('Failed to create album.');
+        // }
       }
     } catch (e) {
       setState(() {
