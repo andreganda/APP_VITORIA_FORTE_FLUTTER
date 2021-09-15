@@ -1,4 +1,8 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:vitoria_forte/Model/Usuario.dart';
 import 'package:vitoria_forte/Model/menu_item.dart';
 import 'package:vitoria_forte/pages/login/login-page.dart';
 
@@ -11,7 +15,7 @@ class MenuItems {
   static const all = <MenuItem>[home, denuncia, botaoPanico, perfil];
 }
 
-class MenuPage extends StatelessWidget {
+class MenuPage extends StatefulWidget {
   final MenuItem currentItem;
   final ValueChanged<MenuItem> onSelectedItem;
 
@@ -20,6 +24,18 @@ class MenuPage extends StatelessWidget {
     this.currentItem,
     this.onSelectedItem,
   }) : super(key: key);
+
+  @override
+  State<MenuPage> createState() => _MenuPageState();
+}
+
+class _MenuPageState extends State<MenuPage> {
+  Usuario userPage = new Usuario();
+
+  @override
+  void initState() {
+    _getUser();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +49,7 @@ class MenuPage extends StatelessWidget {
             children: [
               ListTile(
                 leading: CircleAvatar(),
-                title: Text("ANDRÉ FELIPE MORAIS RODRIGUES"),
+                title: Text(this.userPage.nome.toString()),
                 subtitle: Text("Morador"),
               ),
               Spacer(),
@@ -51,14 +67,14 @@ class MenuPage extends StatelessWidget {
 
   Widget buildMenuItem(MenuItem item) => ListTileTheme(
         child: ListTile(
-          selected: currentItem == item,
+          selected: widget.currentItem == item,
           selectedTileColor: Colors.black12,
           title: Text(
             item.title,
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
           onTap: () {
-            onSelectedItem(item);
+            widget.onSelectedItem(item);
           },
           leading: Icon(
             item.icon,
@@ -80,4 +96,14 @@ class MenuPage extends StatelessWidget {
           leading: Icon(Icons.logout),
         ),
       );
+
+  _getUser() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    try {
+      Map<String, dynamic> userMap = jsonDecode(prefs.getString('userJson'));
+      Usuario user = new Usuario();
+      user = Usuario.fromJson(userMap);
+      this.userPage = user;
+    } catch (e) {}
+  }
 }

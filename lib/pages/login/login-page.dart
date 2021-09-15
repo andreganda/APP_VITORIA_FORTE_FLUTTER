@@ -4,6 +4,7 @@ import 'package:brasil_fields/brasil_fields.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:vitoria_forte/Model/Usuario.dart';
 import 'package:vitoria_forte/pages/index.dart';
 import 'package:vitoria_forte/pages/login/novo-usuario.dart';
@@ -15,6 +16,15 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  @override
+  void initState() {
+    super.initState();
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+  }
+
   var _login = TextEditingController();
   var _senha = TextEditingController();
   var _cpfRecuperar = TextEditingController();
@@ -151,8 +161,8 @@ class _LoginPageState extends State<LoginPage> {
           _callCircular = true;
         });
 
-        Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => new IndexPage()));
+        // Navigator.of(context).pushReplacement(
+        //     MaterialPageRoute(builder: (context) => IndexPage()));
 
         // _carregando(context, 0);
         // var response = await http.get(Uri.encodeFull("${baseUrl}Login"),
@@ -161,25 +171,27 @@ class _LoginPageState extends State<LoginPage> {
         //   print(response.body);
         // }
 
-        // final response = await http.post(
-        //   Uri.parse('${baseUrl}Login'),
-        //   headers: <String, String>{
-        //     'Content-Type': 'application/json; charset=UTF-8',
-        //   },
-        //   body: jsonEncode(<String, String>{
-        //     'Cpf': login,
-        //     'Senha': senha,
-        //   }),
-        // );
+        final response = await http.post(
+          Uri.parse('${baseUrl}Login'),
+          headers: <String, String>{
+            'Content-Type': 'application/json; charset=UTF-8',
+          },
+          body: jsonEncode(<String, String>{
+            'Cpf': login,
+            'Senha': senha,
+          }),
+        );
 
-        // if (response.statusCode == 200) {
-        //   Map<String, dynamic> userMap = jsonDecode(response.body);
-        //   Usuario user = new Usuario();
-        //   user = Usuario.fromJson(userMap);
-        //   print(response.body);
-        // } else {
-        //   // throw Exception('Failed to create album.');
-        // }
+        if (response.statusCode == 200) {
+          Map<String, dynamic> userMap = jsonDecode(response.body);
+          Usuario user = new Usuario();
+          user = Usuario.fromJson(userMap);
+          _saveUserLocalStore(response.body);
+          Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (context) => IndexPage()));
+        } else {
+          // throw Exception('Failed to create album.');
+        }
       }
     } catch (e) {
       setState(() {
@@ -320,4 +332,9 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
   }
+}
+
+_saveUserLocalStore(String userJson) async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  await prefs.setString('userJson', userJson);
 }
