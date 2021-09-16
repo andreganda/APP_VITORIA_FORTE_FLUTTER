@@ -1,7 +1,12 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:vitoria_forte/Model/Usuario.dart';
 import 'package:vitoria_forte/widget/menu-widget.dart';
+import 'package:signalr_client/signalr_client.dart';
 
 class PanicoPage extends StatefulWidget {
   @override
@@ -9,12 +14,64 @@ class PanicoPage extends StatefulWidget {
 }
 
 class _PanicoPageState extends State<PanicoPage> {
+  final hubConnection = HubConnectionBuilder()
+      .withUrl("http://vitoriaforte.web22f41.kinghost.net/chatHub")
+      .build();
+
+  final List<String> messages = new List<String>();
+
+  @override
+  void initState() {
+    super.initState();
+    _getUser();
+    hubConnection.onclose((_) {
+      print("Conexão perdida");
+      startConnection();
+    });
+
+    hubConnection.on("ReceiveMessage", onReceiveMessage);
+
+    startConnection();
+  }
+
+  void startConnection() async {
+    await hubConnection.start(); // Inicia a conexão ao servidor
+  }
+
   int _counter = 0;
   String _msg = "";
   bool _pedidoEnviado = false;
   bool _buttonPressed = false;
   bool _loopActive = false;
   bool _isPressed = false;
+  Usuario userPage = new Usuario();
+
+  _getUser() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    try {
+      Map<String, dynamic> userMap = jsonDecode(prefs.getString('userJson'));
+      Usuario user = new Usuario();
+      user = Usuario.fromJson(userMap);
+      setState(() {
+        this.userPage = user;
+      });
+    } catch (e) {}
+  }
+
+  void onReceiveMessage(List<Object> result) {
+    setState(() {
+      messages.add("${result[0]} diz: ${result[1]}");
+    });
+  }
+
+  void sendMessage() async {
+    await hubConnection.invoke("SendMessage", args: <Object>[
+      this.userPage.nome.toString(),
+      "Flutter"
+    ]).catchError((err) {
+      print(err);
+    });
+  }
 
   void _increaseCounterWhilePressed() async {
     if (_loopActive) return;
@@ -29,6 +86,7 @@ class _PanicoPageState extends State<PanicoPage> {
         _pedidoEnviado = true;
         _loopActive = false;
         _msg = _counter.toString();
+        sendMessage();
         _counter = 0;
       }
       await Future.delayed(Duration(milliseconds: 1000));
