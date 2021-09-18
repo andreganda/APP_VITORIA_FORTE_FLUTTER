@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:brasil_fields/brasil_fields.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
@@ -19,6 +18,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
+    _getUser();
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
@@ -29,6 +29,7 @@ class _LoginPageState extends State<LoginPage> {
   var _senha = TextEditingController();
   var _cpfRecuperar = TextEditingController();
 
+  bool _logando = true;
   bool _passwordVisible = false;
   bool _callCircular = false;
   bool _esqueciSenha = false;
@@ -36,119 +37,143 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: _esqueciSenha
-          ? _buildContainerRecuperarSenha()
-          : SingleChildScrollView(
-              child: Column(
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.only(top: 60.0),
-                    child: Center(
-                      child: Container(
-                          width: 200,
-                          height: 150,
-                          child: Image.asset('asset/images/logo.png')),
-                    ),
-                  ),
-                  Padding(
-                    //padding: const EdgeInsets.only(left:15.0,right: 15.0,top:0,bottom: 0),
-                    padding: EdgeInsets.symmetric(horizontal: 15),
-                    child: TextField(
-                      controller: _login,
-                      textInputAction:
-                          TextInputAction.next, // Moves focus to next.
-                      keyboardType: TextInputType.number,
-                      inputFormatters: [
-                        // obrigatório
-                        FilteringTextInputFormatter.digitsOnly,
-                        CpfInputFormatter(),
-                      ],
-                      decoration: InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'CPF',
-                          hintText: 'Entre com seu cpf'),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(
-                        left: 15.0, right: 15.0, top: 15, bottom: 0),
-                    child: TextField(
-                      onSubmitted: (value) {
-                        logar(this._login.text, this._senha.text, context);
-                      },
-                      controller: _senha,
-                      obscureText: !this._passwordVisible,
-                      decoration: InputDecoration(
-                          suffixIcon: IconButton(
-                            icon: Icon(
-                              // Based on passwordVisible state choose the icon
-                              _passwordVisible
-                                  ? Icons.visibility
-                                  : Icons.visibility_off,
-                              color: Theme.of(context).primaryColorDark,
-                            ),
-                            onPressed: () {
-                              FocusScope.of(context).unfocus();
-                              setState(() {
-                                _passwordVisible = !_passwordVisible;
-                              });
-                            },
+    return _logando
+        ? _buildPreparacao()
+        : Scaffold(
+            backgroundColor: Colors.white,
+            body: _esqueciSenha
+                ? _buildContainerRecuperarSenha()
+                : SingleChildScrollView(
+                    child: Column(
+                      children: <Widget>[
+                        Padding(
+                          padding: const EdgeInsets.only(top: 60.0),
+                          child: Center(
+                            child: Container(
+                                width: 200,
+                                height: 150,
+                                child: Image.asset('asset/images/logo.png')),
                           ),
-                          border: OutlineInputBorder(),
-                          labelText: 'SENHA',
-                          hintText: 'Entre com sua senha'),
+                        ),
+                        Padding(
+                          //padding: const EdgeInsets.only(left:15.0,right: 15.0,top:0,bottom: 0),
+                          padding: EdgeInsets.symmetric(horizontal: 15),
+                          child: TextField(
+                            controller: _login,
+                            textInputAction:
+                                TextInputAction.next, // Moves focus to next.
+                            keyboardType: TextInputType.number,
+                            inputFormatters: [
+                              // obrigatório
+                              FilteringTextInputFormatter.digitsOnly,
+                              CpfInputFormatter(),
+                            ],
+                            decoration: InputDecoration(
+                                border: OutlineInputBorder(),
+                                labelText: 'CPF',
+                                hintText: 'Entre com seu cpf'),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(
+                              left: 15.0, right: 15.0, top: 15, bottom: 0),
+                          child: TextField(
+                            onSubmitted: (value) {
+                              logar(
+                                  this._login.text, this._senha.text, context);
+                            },
+                            controller: _senha,
+                            obscureText: !this._passwordVisible,
+                            decoration: InputDecoration(
+                                suffixIcon: IconButton(
+                                  icon: Icon(
+                                    // Based on passwordVisible state choose the icon
+                                    _passwordVisible
+                                        ? Icons.visibility
+                                        : Icons.visibility_off,
+                                    color: Theme.of(context).primaryColorDark,
+                                  ),
+                                  onPressed: () {
+                                    FocusScope.of(context).unfocus();
+                                    setState(() {
+                                      _passwordVisible = !_passwordVisible;
+                                    });
+                                  },
+                                ),
+                                border: OutlineInputBorder(),
+                                labelText: 'SENHA',
+                                hintText: 'Entre com sua senha'),
+                          ),
+                        ),
+                        FlatButton(
+                          onPressed: () {
+                            setState(() {
+                              _esqueciSenha = true;
+                            });
+                          },
+                          child: Text(
+                            'Esqueci minha senha',
+                            style: TextStyle(color: Colors.black, fontSize: 15),
+                          ),
+                        ),
+                        Container(
+                          height: 50,
+                          width: 250,
+                          decoration: BoxDecoration(
+                              color: Colors.red,
+                              borderRadius: BorderRadius.circular(20)),
+                          child: FlatButton(
+                            onPressed: () {
+                              logar(
+                                  this._login.text, this._senha.text, context);
+                            },
+                            child: _callCircular
+                                ? CircularProgressIndicator(
+                                    backgroundColor: Colors.grey,
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                        Colors.black))
+                                : Text(
+                                    'Logar',
+                                    style: TextStyle(
+                                        color: Colors.white, fontSize: 25),
+                                  ),
+                          ),
+                        ),
+                        SizedBox(
+                          height: 130,
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (_) => NovoUsuarioPage()));
+                          },
+                          child: Text(
+                            'Novo usuário? Criar conta',
+                          ),
+                        )
+                      ],
                     ),
                   ),
-                  FlatButton(
-                    onPressed: () {
-                      setState(() {
-                        _esqueciSenha = true;
-                      });
-                    },
-                    child: Text(
-                      'Esqueci minha senha',
-                      style: TextStyle(color: Colors.black, fontSize: 15),
-                    ),
-                  ),
-                  Container(
-                    height: 50,
-                    width: 250,
-                    decoration: BoxDecoration(
-                        color: Colors.red,
-                        borderRadius: BorderRadius.circular(20)),
-                    child: FlatButton(
-                      onPressed: () {
-                        logar(this._login.text, this._senha.text, context);
-                      },
-                      child: _callCircular
-                          ? CircularProgressIndicator(
-                              backgroundColor: Colors.grey,
-                              valueColor:
-                                  AlwaysStoppedAnimation<Color>(Colors.black))
-                          : Text(
-                              'Logar',
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 25),
-                            ),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 130,
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (_) => NovoUsuarioPage()));
-                    },
-                    child: Text(
-                      'Novo usuário? Criar conta',
-                    ),
-                  )
-                ],
-              ),
-            ),
+          );
+  }
+
+  Widget _buildPreparacao() {
+    return Material(
+      child: Container(
+        decoration: BoxDecoration(color: Colors.white),
+        child: Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Center(
+            child: Text("Estamos preparando tudo para você. Aguarde ....",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 30,
+                )),
+          ),
+        ),
+      ),
     );
   }
 
@@ -194,6 +219,7 @@ class _LoginPageState extends State<LoginPage> {
         }
       }
     } catch (e) {
+      print(e);
       setState(() {
         _callCircular = false;
       });
@@ -331,6 +357,24 @@ class _LoginPageState extends State<LoginPage> {
         ),
       ),
     );
+  }
+
+  _getUser() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    try {
+      Map<String, dynamic> userMap = jsonDecode(prefs.getString('userJson'));
+      Usuario user = new Usuario();
+      user = Usuario.fromJson(userMap);
+
+      if (user != null) {
+        Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) => IndexPage()));
+      }
+    } catch (e) {
+      setState(() {
+        _logando = false;
+      });
+    }
   }
 }
 

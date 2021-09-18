@@ -19,6 +19,7 @@ class Usuario {
   String bairro;
   String cidade;
   String uf;
+  String foto;
 
   Usuario(
       {this.tipoUsuario,
@@ -40,7 +41,8 @@ class Usuario {
       this.complemento,
       this.bairro,
       this.cidade,
-      this.uf});
+      this.uf,
+      this.foto});
 
   Usuario.fromJson(Map<String, dynamic> json) {
     tipoUsuario = json['tipoUsuario'];
@@ -63,6 +65,7 @@ class Usuario {
     bairro = json['bairro'];
     cidade = json['cidade'];
     uf = json['uf'];
+    foto = json['foto'];
   }
 
   Map<String, dynamic> toJson() {
@@ -87,6 +90,7 @@ class Usuario {
     data['bairro'] = this.bairro;
     data['cidade'] = this.cidade;
     data['uf'] = this.uf;
+    data['foto'] = this.foto;
     return data;
   }
 }

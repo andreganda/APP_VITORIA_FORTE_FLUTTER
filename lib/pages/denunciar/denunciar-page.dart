@@ -10,9 +10,9 @@ final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
 String _descricaoFato;
 bool _callCircular = false;
-bool _lights = false;
-String textDenuncia = "ESSA DENÚNCIA NÃO SERA ANÔNIMA";
-Color corText = Colors.black;
+bool _lights = true;
+String textDenuncia = "ESSA DENÚNCIA SERA ANÔNIMA";
+Color corText = Colors.red;
 
 class _DenunciarPageState extends State<DenunciarPage> {
   @override

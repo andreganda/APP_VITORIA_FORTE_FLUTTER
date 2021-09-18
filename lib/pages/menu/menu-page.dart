@@ -89,7 +89,10 @@ class _MenuPageState extends State<MenuPage> {
             "Sair",
             style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
           ),
-          onTap: () {
+          onTap: () async {
+            SharedPreferences preferences =
+                await SharedPreferences.getInstance();
+            await preferences.clear();
             Navigator.of(context).pushReplacement(
                 MaterialPageRoute(builder: (context) => LoginPage()));
           },
@@ -103,7 +106,10 @@ class _MenuPageState extends State<MenuPage> {
       Map<String, dynamic> userMap = jsonDecode(prefs.getString('userJson'));
       Usuario user = new Usuario();
       user = Usuario.fromJson(userMap);
-      this.userPage = user;
+
+      setState(() {
+        this.userPage = user;
+      });
     } catch (e) {}
   }
 }

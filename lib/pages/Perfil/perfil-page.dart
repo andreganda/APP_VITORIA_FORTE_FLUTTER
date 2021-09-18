@@ -8,7 +8,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:vitoria_forte/Model/Usuario.dart';
 import 'package:vitoria_forte/widget/menu-widget.dart';
-import 'package:vitoria_forte/widget/profile_widget.dart';
 import 'package:vitoria_forte/widget/textfield_widget.dart';
 
 import '../../constants.dart';
@@ -23,6 +22,9 @@ class _PerfilPageState extends State<PerfilPage> {
   final picker = ImagePicker();
   final ImagePicker _picker = ImagePicker();
   File _imageFile;
+
+  String fotoUsuario =
+      "https://i.pinimg.com/236x/67/35/5f/67355f52a7c5f12a4660eabae6fb334a.jpg";
 
   @override
   void initState() {
@@ -87,10 +89,9 @@ class _PerfilPageState extends State<PerfilPage> {
       child: Center(
         child: Stack(children: <Widget>[
           CircleAvatar(
-            radius:
-                80.0, //backgroundImage: AssetImage("asset/images/logo.png"),
+            radius: 80.0,
             backgroundImage: _imageFile == null
-                ? AssetImage("asset/images/logo.png")
+                ? NetworkImage(this.fotoUsuario)
                 : FileImage(File(_imageFile.path)),
           ),
           Positioned(
@@ -193,6 +194,7 @@ class _PerfilPageState extends State<PerfilPage> {
           _readFileByte(myPath).then((bytesData) {
             arrayBYtes = bytesData;
             String arrayBytesString = base64.encode(arrayBYtes);
+            _salvarFoto(arrayBytesString);
             print(arrayBytesString);
           });
         } catch (e) {
@@ -200,27 +202,29 @@ class _PerfilPageState extends State<PerfilPage> {
           print(e);
         }
 
-        var array = _readFileByte(_imageFile.path);
-        print(array.toString());
-        //_salvarFoto(array.to);
+        // var array = _readFileByte(_imageFile.path);
+        // print(array.toString());
+        // _salvarFoto(array);
         Navigator.pop(context);
       });
     }
   }
 
-  // _salvarFoto(String base64) async {
-  //   final response = await http.post(
-  //     Uri.parse('${baseUrl}Usuario/salvar_foto_usuario'),
-  //     headers: <String, String>{
-  //       'Content-Type': 'application/json; charset=UTF-8',
-  //     },
-  //     body: jsonEncode(<String, String>{
-  //       'base64': base64,
-  //     }),
-  //   );
+  _salvarFoto(String base64) async {
+    final response = await http.post(
+      Uri.parse('${baseUrl}Usuario/SalvarFoto'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, String>{
+        'base64': base64,
+      }),
+    );
 
-  //   if (response.statusCode == 200) {}
-  // }
+    if (response.statusCode == 200) {
+      print("Deu certo.");
+    }
+  }
 
   Future<Uint8List> _readFileByte(String filePath) async {
     Uri myUri = Uri.parse(filePath);
@@ -244,6 +248,9 @@ class _PerfilPageState extends State<PerfilPage> {
       user = Usuario.fromJson(userMap);
       setState(() {
         this.userPage = user;
+        if (this.userPage.foto != "") {
+          this.fotoUsuario = this.userPage.foto;
+        }
       });
     } catch (e) {}
   }

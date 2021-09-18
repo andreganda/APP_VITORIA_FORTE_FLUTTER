@@ -97,6 +97,7 @@ class _PanicoPageState extends State<PanicoPage> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       home: Scaffold(
         appBar: AppBar(
           title: Text("Botão do pânico"),
