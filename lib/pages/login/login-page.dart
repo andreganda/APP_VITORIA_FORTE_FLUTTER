@@ -8,6 +8,7 @@ import 'package:vitoria_forte/Model/Usuario.dart';
 import 'package:vitoria_forte/pages/index.dart';
 import 'package:vitoria_forte/pages/login/novo-usuario.dart';
 import 'package:vitoria_forte/constants.dart';
+import 'package:vitoria_forte/pages/login/primeiro-acesso.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -144,10 +145,10 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                         GestureDetector(
                           onTap: () {
-                            Navigator.pushReplacement(
+                            Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (_) => NovoUsuarioPage()));
+                                    builder: (_) => PrimeiroAcessoPage()));
                           },
                           child: Text(
                             'Novo usuário? Criar conta',
