@@ -27,15 +27,15 @@ class _HomePageState extends State<HomePage> {
           child: GridView.count(
             //primary: false,
             //padding: const EdgeInsets.all(20),
-            crossAxisSpacing: 10,
-            mainAxisSpacing: 10,
+            crossAxisSpacing: 5,
+            mainAxisSpacing: 5,
             crossAxisCount: 2,
             children: <Widget>[
               _buildContainer(
                   context, 'SOCORRO', FontAwesomeIcons.exclamationTriangle, 1),
               _buildContainer(
                   context, 'DENUNCIAR', FontAwesomeIcons.fileContract, 2),
-              _buildContainer(context, 'PERFIL', FontAwesomeIcons.accusoft, 3),
+              _buildContainer(context, 'PERFIL', FontAwesomeIcons.userAlt, 3),
             ],
           ),
         ),
@@ -52,7 +52,7 @@ Widget _buildContainer(
       onTap: () {
         Navigator.of(context).pushReplacement(MaterialPageRoute(
             builder: (context) => IndexPage(
-                  currentPage: 1,
+                  currentPage: page,
                 )));
       },
       child: Container(
@@ -60,6 +60,10 @@ Widget _buildContainer(
         width: 200,
         decoration: BoxDecoration(
           color: Colors.red,
+          border: Border.all(
+            color: Colors.black,
+            width: 3,
+          ),
           borderRadius: BorderRadius.circular(10),
         ),
         child: Column(
