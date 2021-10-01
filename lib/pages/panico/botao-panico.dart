@@ -8,15 +8,15 @@ import 'package:vitoria_forte/Model/Usuario.dart';
 import 'package:vitoria_forte/widget/menu-widget.dart';
 import 'package:signalr_client/signalr_client.dart';
 
+import '../../constants.dart';
+
 class PanicoPage extends StatefulWidget {
   @override
   _PanicoPageState createState() => _PanicoPageState();
 }
 
 class _PanicoPageState extends State<PanicoPage> {
-  final hubConnection = HubConnectionBuilder()
-      .withUrl("http://vitoriaforte.web22f41.kinghost.net/chatHub")
-      .build();
+  final hubConnection = HubConnectionBuilder().withUrl(baseUrlHub).build();
 
   final List<String> messages = new List<String>();
 
