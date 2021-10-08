@@ -36,9 +36,8 @@ class _DenunciarPageState extends State<DenunciarPage> {
         if (!currentFocus.hasPrimaryFocus) {
           currentFocus.unfocus();
         }
-        setState(() {
-          photoEscolhida = 1;
-        });
+        photoEscolhida = -1;
+        setState(() {});
       },
       child: Scaffold(
         appBar: AppBar(
@@ -343,11 +342,10 @@ class _DenunciarPageState extends State<DenunciarPage> {
       print('tirou foto');
       var file = File(pickedFile.path);
       var fileImage = FileImage(file);
-      setState(() {
-        listFotos.add(fileImage);
-        Navigator.pop(context);
-        photoEscolhida = -1;
-      });
+      listFotos.add(fileImage);
+      Navigator.pop(context);
+      photoEscolhida = -1;
+      setState(() {});
     }
   }
 }
