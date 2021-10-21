@@ -1,8 +1,15 @@
+import 'dart:convert';
 import 'dart:io';
+import 'package:http/http.dart' as http;
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:vitoria_forte/Model/SetoresLocais.dart';
+import 'package:vitoria_forte/Model/Usuario.dart';
 import 'package:vitoria_forte/widget/menu-widget.dart';
+import 'package:searchable_dropdown/searchable_dropdown.dart';
+
+import '../../constants.dart';
 
 class DenunciarPage extends StatefulWidget {
   @override
@@ -18,6 +25,12 @@ String textDenuncia = "ESSA DENÚNCIA SERA ANÔNIMA";
 Color corText = Colors.red;
 var listFotos = new List<FileImage>();
 int photoEscolhida = -1;
+String selectedValueSetor;
+String selectedValueLocal;
+SetoresLocais setorLocal = new SetoresLocais();
+
+final List<DropdownMenuItem> listSetores = [];
+final List<DropdownMenuItem> listLocais = [];
 
 final ImagePicker _picker = ImagePicker();
 
@@ -26,6 +39,13 @@ class _DenunciarPageState extends State<DenunciarPage> {
   void dispose() {
     listFotos = new List<FileImage>();
     super.dispose();
+  }
+
+  @override
+  void initState() {
+    getSetoresLocais();
+
+    super.initState();
   }
 
   @override
@@ -78,6 +98,18 @@ class _DenunciarPageState extends State<DenunciarPage> {
           return 'campo obrigatório';
         }
       },
+      onSaved: (String value) {
+        _descricaoFato = value;
+      },
+    );
+  }
+
+  Widget _buildPontoReferencia() {
+    return TextFormField(
+      maxLines: 1,
+      decoration: InputDecoration(
+          labelText: 'Ponto de referência',
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(6.0))),
       onSaved: (String value) {
         _descricaoFato = value;
       },
@@ -256,6 +288,42 @@ class _DenunciarPageState extends State<DenunciarPage> {
               SizedBox(
                 height: 10,
               ),
+              SearchableDropdown(
+                items: listSetores,
+                value: selectedValueSetor,
+                hint: "Setor",
+                isCaseSensitiveSearch: false,
+                searchHint: "Escolha um setor",
+                onChanged: (value) {
+                  setState(() {
+                    selectedValueSetor = value;
+                  });
+                },
+                isExpanded: true,
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              SearchableDropdown(
+                items: listLocais,
+                value: selectedValueLocal,
+                hint: "Local",
+                isCaseSensitiveSearch: false,
+                searchHint: "Escolha um local",
+                onChanged: (value) {
+                  setState(() {
+                    selectedValueLocal = value;
+                  });
+                },
+                isExpanded: true,
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              _buildPontoReferencia(),
+              SizedBox(
+                height: 10,
+              ),
               SizedBox(
                 height: 10,
               ),
@@ -346,6 +414,45 @@ class _DenunciarPageState extends State<DenunciarPage> {
       Navigator.pop(context);
       photoEscolhida = -1;
       setState(() {});
+    }
+  }
+
+  Future getSetoresLocais() async {
+    try {
+      final response = await http.get(
+          Uri.parse('${baseUrl}Denuncia/listar_setores_locais'),
+          headers: <String, String>{
+            'Content-Type': 'application/json; charset=UTF-8',
+          });
+
+      if (response.statusCode == 200 || response.statusCode == 204) {
+        if (response.body != "") {
+          Map<String, dynamic> setoresLocaisMap = jsonDecode(response.body);
+
+          setorLocal = SetoresLocais.fromJson(setoresLocaisMap);
+
+          listSetores.clear();
+          listLocais.clear();
+
+          for (var _setor in setorLocal.listSetores) {
+            listSetores.add(DropdownMenuItem(
+              child: Text(_setor),
+              value: _setor,
+            ));
+          }
+
+          for (var _local in setorLocal.listLocais) {
+            listLocais.add(DropdownMenuItem(
+              child: Text(_local),
+              value: _local,
+            ));
+          }
+
+          setState(() {});
+        }
+      }
+    } catch (e) {
+      print(e);
     }
   }
 }

@@ -208,19 +208,29 @@ class _LoginPageState extends State<LoginPage> {
           }),
         );
 
-        if (response.statusCode == 200) {
-          Map<String, dynamic> userMap = jsonDecode(response.body);
-          Usuario user = new Usuario();
-          user = Usuario.fromJson(userMap);
-          _saveUserLocalStore(response.body);
-          Navigator.of(context).pushReplacement(
-              MaterialPageRoute(builder: (context) => IndexPage()));
+        if (response.statusCode == 200 || response.statusCode == 204) {
+          if (response.body != "") {
+            Map<String, dynamic> userMap = jsonDecode(response.body);
+
+            Usuario user = new Usuario();
+            user = Usuario.fromJson(userMap);
+            _saveUserLocalStore(response.body);
+            Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (context) => IndexPage()));
+          } else {
+            showAlertDialog(context, "Usuário e/o senha inválidos.");
+            setState(() {
+              _callCircular = false;
+            });
+          }
         } else {
           // throw Exception('Failed to create album.');
         }
       }
     } catch (e) {
       print(e);
+      showAlertDialog(context,
+          "Oppssss. Parece que nossos servidores não estão respondendo bem.");
       setState(() {
         _callCircular = false;
       });
