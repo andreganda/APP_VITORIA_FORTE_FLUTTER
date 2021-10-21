@@ -169,7 +169,7 @@ class _PerfilPageState extends State<PerfilPage> {
       File cropped = await ImageCropper.cropImage(
         sourcePath: pickedFile.path,
         aspectRatio: CropAspectRatio(ratioX: 1, ratioY: 1),
-        compressQuality: 100,
+        compressQuality: 35,
         maxHeight: 700,
         maxWidth: 700,
         compressFormat: ImageCompressFormat.jpg,

@@ -1,12 +1,6 @@
-import 'dart:convert';
 import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:vitoria_forte/pages/login/login-page.dart';
-import 'package:flutter/services.Dart';
-
-import 'Model/Usuario.dart';
 
 // Esta classe permite acesso ao LocalHost com certificados HTTPS inválidos
 class MyHttpOverrides extends HttpOverrides {

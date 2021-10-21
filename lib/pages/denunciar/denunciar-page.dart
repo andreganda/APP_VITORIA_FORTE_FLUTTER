@@ -5,9 +5,9 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:vitoria_forte/Model/SetoresLocais.dart';
-import 'package:vitoria_forte/Model/Usuario.dart';
+//import 'package:vitoria_forte/Model/Usuario.dart';
 import 'package:vitoria_forte/widget/menu-widget.dart';
-import 'package:searchable_dropdown/searchable_dropdown.dart';
+//import 'package:searchable_dropdown/searchable_dropdown.dart';
 
 import '../../constants.dart';
 
@@ -93,6 +93,7 @@ class _DenunciarPageState extends State<DenunciarPage> {
       decoration: InputDecoration(
           labelText: 'Descrição Fato',
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(6.0))),
+      // ignore: missing_return
       validator: (String value) {
         if (value.isEmpty) {
           return 'campo obrigatório';
@@ -288,35 +289,35 @@ class _DenunciarPageState extends State<DenunciarPage> {
               SizedBox(
                 height: 10,
               ),
-              SearchableDropdown(
-                items: listSetores,
-                value: selectedValueSetor,
-                hint: "Setor",
-                isCaseSensitiveSearch: false,
-                searchHint: "Escolha um setor",
-                onChanged: (value) {
-                  setState(() {
-                    selectedValueSetor = value;
-                  });
-                },
-                isExpanded: true,
-              ),
+              // SearchableDropdown.single(
+              //   items: listSetores,
+              //   value: selectedValueSetor,
+              //   hint: "Setor",
+              //   isCaseSensitiveSearch: false,
+              //   searchHint: "Escolha um setor",
+              //   onChanged: (value) {
+              //     setState(() {
+              //       selectedValueSetor = value;
+              //     });
+              //   },
+              //   isExpanded: true,
+              // ),
               SizedBox(
                 height: 10,
               ),
-              SearchableDropdown(
-                items: listLocais,
-                value: selectedValueLocal,
-                hint: "Local",
-                isCaseSensitiveSearch: false,
-                searchHint: "Escolha um local",
-                onChanged: (value) {
-                  setState(() {
-                    selectedValueLocal = value;
-                  });
-                },
-                isExpanded: true,
-              ),
+              // SearchableDropdown.single(
+              //   items: listLocais,
+              //   value: selectedValueLocal,
+              //   hint: "Local",
+              //   isCaseSensitiveSearch: false,
+              //   searchHint: "Escolha um local",
+              //   onChanged: (value) {
+              //     setState(() {
+              //       selectedValueLocal = value;
+              //     });
+              //   },
+              //   isExpanded: true,
+              // ),
               SizedBox(
                 height: 10,
               ),
@@ -402,9 +403,8 @@ class _DenunciarPageState extends State<DenunciarPage> {
   }
 
   void takePhoto(ImageSource source) async {
-    final pickedFile = await _picker.getImage(
-      source: source,
-    );
+    final pickedFile = await _picker.pickImage(
+        source: source, maxHeight: 480, maxWidth: 640, imageQuality: 25);
 
     if (pickedFile != null) {
       print('tirou foto');
