@@ -139,7 +139,7 @@ class _PanicoPageState extends State<PanicoPage> {
       if (_gpsAtivo) {
         Position position = await Geolocator.getCurrentPosition();
         _posicaoUser =
-            "LAT: ${position.latitude} -- LON: ${position.longitude}";
+            "Posição: lat: ${position.latitude} -- lon: ${position.longitude}";
 
         _latitude = position.latitude.toString();
         _longitude = position.longitude.toString();
@@ -219,6 +219,9 @@ class _PanicoPageState extends State<PanicoPage> {
                         ),
                       )
                     : SizedBox.shrink(),
+                SizedBox(
+                  height: 30,
+                ),
                 Text(_posicaoUser)
               ],
             ),

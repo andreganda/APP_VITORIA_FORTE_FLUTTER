@@ -50,14 +50,22 @@ class _LoginPageState extends State<LoginPage> {
                 : SingleChildScrollView(
                     child: Column(
                       children: <Widget>[
+                        SizedBox(
+                          height: 30,
+                        ),
                         Padding(
                           padding: const EdgeInsets.only(top: 60.0),
                           child: Center(
-                            child: Container(
-                                width: 200,
-                                height: 150,
-                                child: Image.asset('asset/images/logo.png')),
+                            // child: Container(
+                            //   width: 200,
+                            //   height: 150,
+                            //   child: Image.asset('asset/images/logo.png'),
+                            // ),
+                            child: _buildLogo(),
                           ),
+                        ),
+                        SizedBox(
+                          height: 70,
                         ),
                         Padding(
                           //padding: const EdgeInsets.only(left:15.0,right: 15.0,top:0,bottom: 0),
@@ -161,6 +169,37 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
           );
+  }
+
+  Widget _buildLogo() {
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'IN',
+              style: TextStyle(
+                  color: Colors.red, fontSize: 70, fontWeight: FontWeight.bold),
+            ),
+            Text(
+              'tegra',
+              style: TextStyle(fontSize: 70, fontWeight: FontWeight.bold),
+            )
+          ],
+        ),
+        SizedBox(
+          height: 10,
+        ),
+        Container(
+          child: Text(
+            'MOBILE',
+            style: TextStyle(
+                color: Colors.black, fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+        ),
+      ],
+    );
   }
 
   Widget _buildPreparacao() {
