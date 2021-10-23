@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:brasil_fields/brasil_fields.dart';
 import 'package:flutter/services.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -20,6 +21,7 @@ class _LoginPageState extends State<LoginPage> {
   void initState() {
     super.initState();
     _getUser();
+    _determinePosition();
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
@@ -29,7 +31,8 @@ class _LoginPageState extends State<LoginPage> {
   var _login = TextEditingController();
   var _senha = TextEditingController();
   var _cpfRecuperar = TextEditingController();
-
+  bool _gpsAtivo = false;
+  String _msgErroGps = "";
   bool _logando = true;
   bool _passwordVisible = false;
   bool _callCircular = false;
@@ -180,9 +183,7 @@ class _LoginPageState extends State<LoginPage> {
 
   Future logar(String login, String senha, BuildContext context) async {
     try {
-      if (login.isEmpty || senha.isEmpty) {
-        showAlertDialog(context, "INSIRA UM LOGIN E/OU SENHA");
-      } else {
+      if (_verificarCampos(login, senha, context)) {
         setState(() {
           _callCircular = true;
         });
@@ -224,7 +225,8 @@ class _LoginPageState extends State<LoginPage> {
             });
           }
         } else {
-          // throw Exception('Failed to create album.');
+          showAlertDialog(context,
+              "Oppssss. Parece que nossos servidores não estão respondendo bem.");
         }
       }
     } catch (e) {
@@ -235,6 +237,20 @@ class _LoginPageState extends State<LoginPage> {
         _callCircular = false;
       });
     }
+  }
+
+  bool _verificarCampos(String login, String senha, BuildContext context) {
+    if (login.isEmpty || senha.isEmpty) {
+      showAlertDialog(context, "INSIRA UM LOGIN E/OU SENHA");
+      return false;
+    }
+    _determinePosition();
+    if (!_gpsAtivo) {
+      showAlertDialog(context, _msgErroGps);
+      return false;
+    }
+
+    return true;
   }
 
   showAlertDialog(BuildContext context, String text) {
@@ -385,6 +401,47 @@ class _LoginPageState extends State<LoginPage> {
       setState(() {
         _logando = false;
       });
+    }
+  }
+
+  _determinePosition() async {
+    try {
+      bool serviceEnabled;
+      LocationPermission permission;
+      serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        _msgErroGps = "Você precisa Ativar sua localização";
+        _gpsAtivo = false;
+        return Future.error('Location services are disabled.');
+      }
+
+      permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          _msgErroGps =
+              "Você precisa permitir que o aplicativo acesse sua localização";
+          _gpsAtivo = false;
+          return Future.error('Location permissions are denied');
+        }
+      }
+
+      if (permission == LocationPermission.deniedForever) {
+        _gpsAtivo = false;
+        _msgErroGps =
+            "As permissões de localização para esse app estão permanentemente desativadas, vá em configurações e mude isso.";
+        return Future.error(
+            'Location permissions are permanently denied, we cannot request permissions.');
+      }
+
+      if (_gpsAtivo) Position position = await Geolocator.getCurrentPosition();
+      _gpsAtivo = true;
+
+      if (!_gpsAtivo) {
+        showAlertDialog(context, _msgErroGps);
+      }
+    } catch (e) {
+      showAlertDialog(context, _msgErroGps);
     }
   }
 }

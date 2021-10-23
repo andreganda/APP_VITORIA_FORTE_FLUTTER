@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:vitoria_forte/Model/Usuario.dart';
 import 'package:vitoria_forte/widget/menu-widget.dart';
@@ -23,6 +24,7 @@ class _PanicoPageState extends State<PanicoPage> {
   @override
   void initState() {
     super.initState();
+    _determinePosition();
     _getUser();
     hubConnection.onclose((_) {
       print("Conexão perdida");
@@ -46,6 +48,12 @@ class _PanicoPageState extends State<PanicoPage> {
   bool _isPressed = false;
   Usuario userPage = new Usuario();
 
+  bool _gpsAtivo = false;
+  String _msgErroGps = "";
+  String _posicaoUser = "";
+  String _latitude = "";
+  String _longitude = "";
+
   _getUser() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     try {
@@ -67,7 +75,9 @@ class _PanicoPageState extends State<PanicoPage> {
   void sendMessage() async {
     await hubConnection.invoke("SendMessage", args: <Object>[
       this.userPage.nome.toString(),
-      "Flutter"
+      this.userPage.cpf.toString(),
+      _latitude,
+      _longitude
     ]).catchError((err) {
       print(err);
     });
@@ -92,6 +102,52 @@ class _PanicoPageState extends State<PanicoPage> {
       await Future.delayed(Duration(milliseconds: 1000));
     }
     _loopActive = false;
+  }
+
+  _determinePosition() async {
+    try {
+      bool serviceEnabled;
+      LocationPermission permission;
+      serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        _msgErroGps = "Você precisa Ativar sua localização";
+        _gpsAtivo = false;
+        return Future.error('Location services are disabled.');
+      }
+
+      permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          _msgErroGps =
+              "Você precisa permitir que o aplicativo acesse sua localização";
+          _gpsAtivo = false;
+          return Future.error('Location permissions are denied');
+        }
+      }
+
+      if (permission == LocationPermission.deniedForever) {
+        _gpsAtivo = false;
+        _msgErroGps =
+            "As permissões de localização para esse app estão permanentemente desativadas, vá em configurações e mude isso.";
+        return Future.error(
+            'Location permissions are permanently denied, we cannot request permissions.');
+      }
+
+      _gpsAtivo = true;
+
+      if (_gpsAtivo) {
+        Position position = await Geolocator.getCurrentPosition();
+        _posicaoUser =
+            "LAT: ${position.latitude} -- LON: ${position.longitude}";
+
+        _latitude = position.latitude.toString();
+        _longitude = position.longitude.toString();
+
+        print(_posicaoUser);
+        setState(() {});
+      }
+    } catch (e) {}
   }
 
   @override
@@ -162,7 +218,8 @@ class _PanicoPageState extends State<PanicoPage> {
                               fontWeight: FontWeight.bold, fontSize: 30),
                         ),
                       )
-                    : SizedBox.shrink()
+                    : SizedBox.shrink(),
+                Text(_posicaoUser)
               ],
             ),
           ),
