@@ -1,15 +1,14 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:dropdown_search/dropdown_search.dart';
-import 'package:find_dropdown/find_dropdown.dart';
 import 'package:http/http.dart' as http;
-
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:vitoria_forte/Model/SetoresLocais.dart';
-//import 'package:vitoria_forte/Model/Usuario.dart';
+import 'package:vitoria_forte/Model/Usuario.dart';
 import 'package:vitoria_forte/widget/menu-widget.dart';
-//import 'package:searchable_dropdown/searchable_dropdown.dart';
 
 import '../../constants.dart';
 
@@ -20,7 +19,10 @@ class DenunciarPage extends StatefulWidget {
 
 final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-String _descricaoFato;
+String _setor = "";
+String _local = "";
+String _descricaoFato = "";
+String _pontoReferencia = "";
 bool _callCircular = false;
 bool _lights = true;
 String textDenuncia = "ESSA DENÚNCIA SERA ANÔNIMA";
@@ -36,8 +38,14 @@ List<String> listSetoresString = [];
 List<DropdownMenuItem> listLocais = [];
 List<String> listLocaisString = [];
 List<String> listLocaisSearch = [];
-
+List<String> listFotosBase64 = [];
 final ImagePicker _picker = ImagePicker();
+
+var descricaoController = TextEditingController();
+var pontoReferenciaController = TextEditingController();
+var setorController = TextEditingController();
+
+Usuario userPage = new Usuario();
 
 class _DenunciarPageState extends State<DenunciarPage> {
   @override
@@ -48,6 +56,7 @@ class _DenunciarPageState extends State<DenunciarPage> {
 
   @override
   void initState() {
+    _getUser();
     getSetoresLocais();
 
     super.initState();
@@ -79,6 +88,7 @@ class _DenunciarPageState extends State<DenunciarPage> {
               return;
             } else {
               _formKey.currentState.save();
+              _salvarDenuncia(listFotosBase64);
               setState(() {
                 _callCircular = true;
               });
@@ -95,6 +105,7 @@ class _DenunciarPageState extends State<DenunciarPage> {
   Widget _buildDescricao() {
     return TextFormField(
       maxLines: 4,
+      controller: descricaoController,
       decoration: InputDecoration(
           labelText: 'Descrição Fato',
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(6.0))),
@@ -112,6 +123,7 @@ class _DenunciarPageState extends State<DenunciarPage> {
 
   Widget _buildPontoReferencia() {
     return TextFormField(
+      controller: pontoReferenciaController,
       maxLines: 1,
       decoration: InputDecoration(
         labelText: 'Ponto de referência',
@@ -120,7 +132,7 @@ class _DenunciarPageState extends State<DenunciarPage> {
         ),
       ),
       onSaved: (String value) {
-        _descricaoFato = value;
+        _pontoReferencia = value;
       },
     );
   }
@@ -248,6 +260,7 @@ class _DenunciarPageState extends State<DenunciarPage> {
               onPressed: () {
                 setState(() {
                   listFotos.removeAt(indice);
+                  listFotosBase64.removeAt(indice);
                   Navigator.pop(context);
                 });
               },
@@ -284,10 +297,7 @@ class _DenunciarPageState extends State<DenunciarPage> {
     );
   }
 
-  getData(String filter) {
-    print(filter);
-  }
-
+//contrução do corpo principal do componente
   Container _buildContainer() {
     return Container(
       margin: EdgeInsets.all(24),
@@ -301,18 +311,6 @@ class _DenunciarPageState extends State<DenunciarPage> {
               SizedBox(
                 height: 10,
               ),
-
-              // FindDropdown(
-              //   items: listSetoresString,
-              //   label: "Setor",
-              //   onChanged: (String item) => print(item),
-              //   selectedItem: "Brasil",
-              //   searchBoxDecoration: InputDecoration(
-              //       contentPadding: EdgeInsets.fromLTRB(12, 12, 0, 0),
-              //       hintText: "Procurar",
-              //       border: OutlineInputBorder()),
-              // ),
-
               DropdownSearch<String>(
                 mode: Mode.DIALOG,
                 showSelectedItems: true,
@@ -325,20 +323,20 @@ class _DenunciarPageState extends State<DenunciarPage> {
                 items: listSetoresString,
                 showClearButton: true,
                 onChanged: (value) {
+                  _setor = value;
                   listLocaisSearch = [];
                   if (value != null) {
+                    var arrayId = value.split(':');
+                    var setorString = arrayId[1].trim();
+
                     listLocaisSearch = listLocaisString
-                        .where((element) => element.contains(value))
+                        .where((element) => element.contains(setorString))
                         .toList();
                   } else {
                     listLocaisSearch = [];
                   }
-
                   setState(() {});
                 },
-                // popupItemDisabled: (String s) => s.startsWith('I'),
-                // onChanged: print,
-                // selectedItem: "Brazil",
               ),
               SizedBox(
                 height: 20,
@@ -355,28 +353,12 @@ class _DenunciarPageState extends State<DenunciarPage> {
                 items: listLocaisSearch,
                 showClearButton: true,
                 onChanged: (value) {
-                  print(value);
+                  _local = value;
                 },
-                // popupItemDisabled: (String s) => s.startsWith('I'),
-                // onChanged: print,
-                // selectedItem: "Brazil",
               ),
               SizedBox(
                 height: 10,
               ),
-              // SearchableDropdown.single(
-              //   items: listLocais,
-              //   value: selectedValueLocal,
-              //   hint: "Local",
-              //   isCaseSensitiveSearch: false,
-              //   searchHint: "Escolha um local",
-              //   onChanged: (value) {
-              //     setState(() {
-              //       selectedValueLocal = value;
-              //     });
-              //   },
-              //   isExpanded: true,
-              // ),
               SizedBox(
                 height: 10,
               ),
@@ -463,12 +445,22 @@ class _DenunciarPageState extends State<DenunciarPage> {
 
   void takePhoto(ImageSource source) async {
     final pickedFile = await _picker.pickImage(
-        source: source, maxHeight: 480, maxWidth: 640, imageQuality: 25);
+        source: source, maxHeight: 480, maxWidth: 640, imageQuality: 50);
 
     if (pickedFile != null) {
-      print('tirou foto');
       var file = File(pickedFile.path);
       var fileImage = FileImage(file);
+
+      try {
+        Uint8List arrayBYtes;
+        String myPath = pickedFile.path;
+        _readFileByte(myPath).then((bytesData) {
+          arrayBYtes = bytesData;
+          String arrayBytesString = base64.encode(arrayBYtes);
+          listFotosBase64.add(arrayBytesString);
+        });
+      } catch (e) {}
+
       listFotos.add(fileImage);
       Navigator.pop(context);
       photoEscolhida = -1;
@@ -493,12 +485,15 @@ class _DenunciarPageState extends State<DenunciarPage> {
           listSetores.clear();
           listLocais.clear();
 
+          listSetoresString.clear();
+          listLocaisString.clear();
+
           for (var _setor in setorLocal.listSetores) {
             listSetores.add(DropdownMenuItem(
               child: Text(_setor.descricao),
               value: _setor,
             ));
-            listSetoresString.add(_setor.descricao);
+            listSetoresString.add("${_setor.id} : ${_setor.descricao}");
           }
 
           for (var _local in setorLocal.listLocais) {
@@ -508,13 +503,109 @@ class _DenunciarPageState extends State<DenunciarPage> {
                 value: _local,
               ),
             );
-            listLocaisString
-                .add(" ${_local.descricaoSetor} -> ${_local.descricao}");
+            listLocaisString.add(
+                "${_local.id} : ${_local.descricaoSetor} -> ${_local.descricao}");
           }
         }
       }
+    } catch (e) {}
+  }
+
+  Future<Uint8List> _readFileByte(String filePath) async {
+    Uri myUri = Uri.parse(filePath);
+    File audioFile = new File.fromUri(myUri);
+    Uint8List bytes;
+    await audioFile.readAsBytes().then((value) {
+      bytes = Uint8List.fromList(value);
+      ;
+    }).catchError((onError) {});
+    return bytes;
+  }
+
+  showAlertDialog(BuildContext context, String title, String text) {
+    Widget okButton = FlatButton(
+      child: Text("OK"),
+      onPressed: () {
+        Navigator.of(context).pop();
+      },
+    );
+    AlertDialog alerta = AlertDialog(
+      title: Text(title),
+      content: Text(text),
+      actions: [
+        okButton,
+      ],
+    );
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alerta;
+      },
+    );
+  }
+
+  _salvarDenuncia(List<String> fotos) async {
+    try {
+      String jsonTags = jsonEncode(fotos);
+      final response = await http.post(
+        Uri.parse('${baseUrl}Denuncia/salvar_denuncia'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, String>{
+          'fotos': jsonEncode(fotos),
+          'descricaoFato': _descricaoFato,
+          'pontoReferencia': _pontoReferencia,
+          'setor': _setor,
+          'local': _local,
+          'anonimo': _lights == true ? "1" : "0",
+          'userCpf': userPage.cpf
+        }),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 204) {
+        showAlertDialog(
+          context,
+          "Parabéns",
+          "Sua denuncia foi enviada com sucesso",
+        );
+
+        descricaoController.clear();
+        pontoReferenciaController.clear();
+        listFotos.clear();
+        listFotosBase64.clear();
+
+        setState(() {
+          _callCircular = false;
+        });
+      } else {
+        showAlertDialog(
+          context,
+          "Oppsss",
+          "Parece que nossos servidores não estão respondendo como esperado, tente novamente mais tarde.",
+        );
+      }
     } catch (e) {
-      print(e);
+      showAlertDialog(
+        context,
+        "Oppsss",
+        "Não conseguimos enviar sua denuncia com sucesso, tente novamente.",
+      );
+      setState(() {
+        _callCircular = false;
+      });
     }
+  }
+
+  _getUser() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    try {
+      Map<String, dynamic> userMap = jsonDecode(prefs.getString('userJson'));
+      Usuario user = new Usuario();
+      user = Usuario.fromJson(userMap);
+      setState(() {
+        userPage = user;
+      });
+    } catch (e) {}
   }
 }
