@@ -227,16 +227,6 @@ class _LoginPageState extends State<LoginPage> {
           _callCircular = true;
         });
 
-        // Navigator.of(context).pushReplacement(
-        //     MaterialPageRoute(builder: (context) => IndexPage()));
-
-        // _carregando(context, 0);
-        // var response = await http.get(Uri.encodeFull("${baseUrl}Login"),
-        //     headers: {"Accept": "application/json"});
-        // if (response.body != null) {
-        //   print(response.body);
-        // }
-
         final response = await http.post(
           Uri.parse('${baseUrl}Login'),
           headers: <String, String>{
