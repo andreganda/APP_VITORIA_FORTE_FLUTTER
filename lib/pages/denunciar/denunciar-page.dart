@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:dropdown_search/dropdown_search.dart';
+import 'package:find_dropdown/find_dropdown.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:flutter/material.dart';
@@ -29,8 +31,11 @@ String selectedValueSetor;
 String selectedValueLocal;
 SetoresLocais setorLocal = new SetoresLocais();
 
-final List<DropdownMenuItem> listSetores = [];
-final List<DropdownMenuItem> listLocais = [];
+List<DropdownMenuItem> listSetores = [];
+List<String> listSetoresString = [];
+List<DropdownMenuItem> listLocais = [];
+List<String> listLocaisString = [];
+List<String> listLocaisSearch = [];
 
 final ImagePicker _picker = ImagePicker();
 
@@ -109,8 +114,11 @@ class _DenunciarPageState extends State<DenunciarPage> {
     return TextFormField(
       maxLines: 1,
       decoration: InputDecoration(
-          labelText: 'Ponto de referência',
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(6.0))),
+        labelText: 'Ponto de referência',
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(6.0),
+        ),
+      ),
       onSaved: (String value) {
         _descricaoFato = value;
       },
@@ -276,6 +284,10 @@ class _DenunciarPageState extends State<DenunciarPage> {
     );
   }
 
+  getData(String filter) {
+    print(filter);
+  }
+
   Container _buildContainer() {
     return Container(
       margin: EdgeInsets.all(24),
@@ -289,19 +301,66 @@ class _DenunciarPageState extends State<DenunciarPage> {
               SizedBox(
                 height: 10,
               ),
-              // SearchableDropdown.single(
-              //   items: listSetores,
-              //   value: selectedValueSetor,
-              //   hint: "Setor",
-              //   isCaseSensitiveSearch: false,
-              //   searchHint: "Escolha um setor",
-              //   onChanged: (value) {
-              //     setState(() {
-              //       selectedValueSetor = value;
-              //     });
-              //   },
-              //   isExpanded: true,
+
+              // FindDropdown(
+              //   items: listSetoresString,
+              //   label: "Setor",
+              //   onChanged: (String item) => print(item),
+              //   selectedItem: "Brasil",
+              //   searchBoxDecoration: InputDecoration(
+              //       contentPadding: EdgeInsets.fromLTRB(12, 12, 0, 0),
+              //       hintText: "Procurar",
+              //       border: OutlineInputBorder()),
               // ),
+
+              DropdownSearch<String>(
+                mode: Mode.DIALOG,
+                showSelectedItems: true,
+                dropdownSearchDecoration: InputDecoration(
+                  hintText: "Selecione um setor",
+                  labelText: "Setor",
+                  contentPadding: EdgeInsets.fromLTRB(12, 12, 0, 0),
+                  border: OutlineInputBorder(),
+                ),
+                items: listSetoresString,
+                showClearButton: true,
+                onChanged: (value) {
+                  listLocaisSearch = [];
+                  if (value != null) {
+                    listLocaisSearch = listLocaisString
+                        .where((element) => element.contains(value))
+                        .toList();
+                  } else {
+                    listLocaisSearch = [];
+                  }
+
+                  setState(() {});
+                },
+                // popupItemDisabled: (String s) => s.startsWith('I'),
+                // onChanged: print,
+                // selectedItem: "Brazil",
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              DropdownSearch<String>(
+                mode: Mode.DIALOG,
+                showSelectedItems: true,
+                dropdownSearchDecoration: InputDecoration(
+                  hintText: "Selecione um local",
+                  labelText: "Local",
+                  contentPadding: EdgeInsets.fromLTRB(12, 12, 0, 0),
+                  border: OutlineInputBorder(),
+                ),
+                items: listLocaisSearch,
+                showClearButton: true,
+                onChanged: (value) {
+                  print(value);
+                },
+                // popupItemDisabled: (String s) => s.startsWith('I'),
+                // onChanged: print,
+                // selectedItem: "Brazil",
+              ),
               SizedBox(
                 height: 10,
               ),
@@ -436,19 +495,22 @@ class _DenunciarPageState extends State<DenunciarPage> {
 
           for (var _setor in setorLocal.listSetores) {
             listSetores.add(DropdownMenuItem(
-              child: Text(_setor),
+              child: Text(_setor.descricao),
               value: _setor,
             ));
+            listSetoresString.add(_setor.descricao);
           }
 
           for (var _local in setorLocal.listLocais) {
-            listLocais.add(DropdownMenuItem(
-              child: Text(_local),
-              value: _local,
-            ));
+            listLocais.add(
+              DropdownMenuItem(
+                child: Text(_local.descricao),
+                value: _local,
+              ),
+            );
+            listLocaisString
+                .add(" ${_local.descricaoSetor} -> ${_local.descricao}");
           }
-
-          setState(() {});
         }
       }
     } catch (e) {
