@@ -5,6 +5,7 @@ class Usuario {
   String senha;
   int errosSenha;
   int id;
+  int status;
   String cpf;
   String nome;
   String dataNascimento;
@@ -28,6 +29,7 @@ class Usuario {
       this.senha,
       this.errosSenha,
       this.id,
+      this.status,
       this.cpf,
       this.nome,
       this.dataNascimento,
@@ -66,6 +68,7 @@ class Usuario {
     cidade = json['cidade'];
     uf = json['uf'];
     foto = json['foto'];
+    status = json['status'];
   }
 
   Map<String, dynamic> toJson() {
@@ -91,6 +94,7 @@ class Usuario {
     data['cidade'] = this.cidade;
     data['uf'] = this.uf;
     data['foto'] = this.foto;
+    data['status'] = this.status;
     return data;
   }
 }

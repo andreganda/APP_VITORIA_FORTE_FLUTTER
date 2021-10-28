@@ -21,7 +21,8 @@ dependencies:
   geolocator: 7.6.2
   dropdown_search: ^1.0.4
   find_dropdown: ^1.0.0
-
+  connectivity: ^3.0.6
+  
   # no flutter upgrade novo esse package não funciona
   # searchable_dropdown: ^1.1.3
 

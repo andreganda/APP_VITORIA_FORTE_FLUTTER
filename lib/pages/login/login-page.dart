@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:brasil_fields/brasil_fields.dart';
 import 'package:flutter/services.dart';
@@ -7,25 +8,81 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:vitoria_forte/Model/Usuario.dart';
 import 'package:vitoria_forte/pages/index.dart';
-import 'package:vitoria_forte/pages/login/novo-usuario.dart';
 import 'package:vitoria_forte/constants.dart';
 import 'package:vitoria_forte/pages/login/primeiro-acesso.dart';
+import 'package:connectivity/connectivity.dart';
+
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class LoginPage extends StatefulWidget {
   @override
   _LoginPageState createState() => _LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
+  ConnectivityResult _connectionStatus = ConnectivityResult.none;
+  final Connectivity _connectivity = Connectivity();
+  StreamSubscription<ConnectivityResult> _connectivitySubscription;
+
   @override
   void initState() {
     super.initState();
+
+    WidgetsBinding.instance.addObserver(this);
+
+    _connectivitySubscription =
+        _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
+
+    initConnectivity();
     _getUser();
     _determinePosition();
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+
+    if (state == AppLifecycleState.inactive ||
+        state == AppLifecycleState.detached) return;
+
+    final isBackground = state == AppLifecycleState.paused;
+
+    if (!isBackground) {}
+  }
+
+  Future<void> initConnectivity() async {
+    ConnectivityResult result;
+    try {
+      result = await _connectivity.checkConnectivity();
+    } on PlatformException catch (e) {
+      print(e.toString());
+      return;
+    }
+    return _updateConnectionStatus(result);
+  }
+
+  Future<void> _updateConnectionStatus(ConnectivityResult result) async {
+    var checkConect = await _connectivity.checkConnectivity();
+
+    if (checkConect.index != 2) {
+      _conectadoRede = true;
+    } else {
+      _conectadoRede = false;
+    }
+
+    setState(() {});
   }
 
   var _login = TextEditingController();
@@ -38,6 +95,7 @@ class _LoginPageState extends State<LoginPage> {
   bool _callCircular = false;
   bool _esqueciSenha = false;
   final focusNode = FocusNode();
+  bool _conectadoRede = false;
 
   @override
   Widget build(BuildContext context) {
@@ -128,29 +186,8 @@ class _LoginPageState extends State<LoginPage> {
                             style: TextStyle(color: Colors.black, fontSize: 15),
                           ),
                         ),
-                        Container(
-                          height: 50,
-                          width: 250,
-                          decoration: BoxDecoration(
-                              color: Colors.red,
-                              borderRadius: BorderRadius.circular(20)),
-                          child: FlatButton(
-                            onPressed: () {
-                              logar(
-                                  this._login.text, this._senha.text, context);
-                            },
-                            child: _callCircular
-                                ? CircularProgressIndicator(
-                                    backgroundColor: Colors.grey,
-                                    valueColor: AlwaysStoppedAnimation<Color>(
-                                        Colors.black))
-                                : Text(
-                                    'Logar',
-                                    style: TextStyle(
-                                        color: Colors.white, fontSize: 25),
-                                  ),
-                          ),
-                        ),
+                        _buildBtnLogar(context),
+                        _buildInformacaoNetWork(),
                         SizedBox(
                           height: 130,
                         ),
@@ -169,6 +206,28 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
           );
+  }
+
+  Container _buildBtnLogar(BuildContext context) {
+    return Container(
+      height: 50,
+      width: 250,
+      decoration: BoxDecoration(
+          color: Colors.red, borderRadius: BorderRadius.circular(20)),
+      child: FlatButton(
+        onPressed: () {
+          logar(this._login.text, this._senha.text, context);
+        },
+        child: _callCircular
+            ? CircularProgressIndicator(
+                backgroundColor: Colors.grey,
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.black))
+            : Text(
+                'Logar',
+                style: TextStyle(color: Colors.white, fontSize: 25),
+              ),
+      ),
+    );
   }
 
   Widget _buildLogo() {
@@ -244,9 +303,19 @@ class _LoginPageState extends State<LoginPage> {
 
             Usuario user = new Usuario();
             user = Usuario.fromJson(userMap);
-            _saveUserLocalStore(response.body);
-            Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (context) => IndexPage()));
+
+            if (user.status == 0) {
+              showAlertDialog(context,
+                  "Seu usuário esta bloqueado, procure a administração.");
+              setState(() {
+                _callCircular = false;
+                _logando = false;
+              });
+            } else {
+              _saveUserLocalStore(response.body);
+              Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (context) => IndexPage()));
+            }
           } else {
             showAlertDialog(context, "Usuário e/o senha inválidos.");
             setState(() {
@@ -423,8 +492,12 @@ class _LoginPageState extends State<LoginPage> {
       user = Usuario.fromJson(userMap);
 
       if (user != null) {
-        Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => IndexPage()));
+        await verifcarUsuarioLogado(user.cpf, context);
+        // Navigator.of(context).pushReplacement(
+        //   MaterialPageRoute(
+        //     builder: (context) => IndexPage(),
+        //   ),
+        // );
       }
     } catch (e) {
       setState(() {
@@ -473,9 +546,90 @@ class _LoginPageState extends State<LoginPage> {
       showAlertDialog(context, _msgErroGps);
     }
   }
-}
 
-_saveUserLocalStore(String userJson) async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  await prefs.setString('userJson', userJson);
+  Widget _buildInformacaoNetWork() {
+    if (!_conectadoRede) {
+      return Column(
+        children: [
+          SizedBox(
+            height: 10,
+          ),
+          Container(
+            height: 30,
+            child: Container(
+              child: Text(
+                'Seu dispositivo não esta conectado a internet.',
+                style: TextStyle(
+                    color: Colors.red,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold),
+              ),
+            ),
+          ),
+        ],
+      );
+    } else
+      return SizedBox.shrink();
+  }
+
+  _saveUserLocalStore(String userJson) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('userJson', userJson);
+  }
+
+  Future verifcarUsuarioLogado(String login, BuildContext context) async {
+    try {
+      final response = await http.post(
+        Uri.parse('${baseUrl}Login/VerificarUsuarioLogado'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, String>{'Cpf': login}),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 204) {
+        if (response.body != "") {
+          Map<String, dynamic> userMap = jsonDecode(response.body);
+          Usuario user = new Usuario();
+          user = Usuario.fromJson(userMap);
+
+          if (user.status == 0) {
+            showAlertDialog(context,
+                "Seu usuário esta bloqueado, procure a administração.");
+
+            SharedPreferences preferences =
+                await SharedPreferences.getInstance();
+            await preferences.clear();
+
+            setState(() {
+              _callCircular = false;
+              _logando = false;
+            });
+          } else {
+            _saveUserLocalStore(response.body);
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(
+                builder: (context) => IndexPage(),
+              ),
+            );
+          }
+        }
+      } else {
+        showAlertDialog(context,
+            "Oppssss. Parece que nossos servidores não estão respondendo bem.");
+        setState(() {
+          _callCircular = false;
+          _logando = false;
+        });
+      }
+    } catch (e) {
+      print(e);
+      showAlertDialog(context,
+          "Oppssss. Parece que nossos servidores não estão respondendo bem.");
+      setState(() {
+        _callCircular = false;
+        _logando = false;
+      });
+    }
+  }
 }
