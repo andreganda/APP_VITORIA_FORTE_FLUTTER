@@ -96,6 +96,8 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
   bool _esqueciSenha = false;
   final focusNode = FocusNode();
   bool _conectadoRede = false;
+  bool circularButtonRecuperarSenha = false;
+  var _cpfRecuperarSenha = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -103,108 +105,117 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
         ? _buildPreparacao()
         : Scaffold(
             backgroundColor: Colors.white,
-            body: _esqueciSenha
-                ? _buildContainerRecuperarSenha()
-                : SingleChildScrollView(
-                    child: Column(
-                      children: <Widget>[
-                        SizedBox(
-                          height: 30,
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(top: 60.0),
-                          child: Center(
-                            // child: Container(
-                            //   width: 200,
-                            //   height: 150,
-                            //   child: Image.asset('asset/images/logo.png'),
-                            // ),
-                            child: _buildLogo(),
-                          ),
-                        ),
-                        SizedBox(
-                          height: 70,
-                        ),
-                        Padding(
-                          //padding: const EdgeInsets.only(left:15.0,right: 15.0,top:0,bottom: 0),
-                          padding: EdgeInsets.symmetric(horizontal: 15),
-                          child: TextField(
-                            controller: _login,
-                            textInputAction:
-                                TextInputAction.next, // Moves focus to next.
-                            keyboardType: TextInputType.number,
-                            inputFormatters: [
-                              // obrigatório
-                              FilteringTextInputFormatter.digitsOnly,
-                              CpfInputFormatter(),
-                            ],
-                            decoration: InputDecoration(
-                                border: OutlineInputBorder(),
-                                labelText: 'CPF',
-                                hintText: 'Entre com seu cpf'),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(
-                              left: 15.0, right: 15.0, top: 15, bottom: 0),
-                          child: TextField(
-                            onSubmitted: (value) {
-                              logar(
-                                  this._login.text, this._senha.text, context);
-                            },
-                            controller: _senha,
-                            obscureText: !this._passwordVisible,
-                            decoration: InputDecoration(
-                                suffixIcon: IconButton(
-                                  icon: Icon(
-                                    // Based on passwordVisible state choose the icon
-                                    _passwordVisible
-                                        ? Icons.visibility
-                                        : Icons.visibility_off,
-                                    color: Theme.of(context).primaryColorDark,
-                                  ),
-                                  onPressed: () {
-                                    FocusScope.of(context).unfocus();
-                                    setState(() {
-                                      _passwordVisible = !_passwordVisible;
-                                    });
-                                  },
-                                ),
-                                border: OutlineInputBorder(),
-                                labelText: 'SENHA',
-                                hintText: 'Entre com sua senha'),
-                          ),
-                        ),
-                        FlatButton(
-                          onPressed: () {
-                            setState(() {
-                              _esqueciSenha = true;
-                            });
-                          },
-                          child: Text(
-                            'Esqueci minha senha',
-                            style: TextStyle(color: Colors.black, fontSize: 15),
-                          ),
-                        ),
-                        _buildBtnLogar(context),
-                        _buildInformacaoNetWork(),
-                        SizedBox(
-                          height: 130,
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (_) => PrimeiroAcessoPage()));
-                          },
-                          child: Text(
-                            'Novo usuário? Criar conta',
-                          ),
-                        )
-                      ],
+            body: SingleChildScrollView(
+              child: Column(
+                children: <Widget>[
+                  SizedBox(
+                    height: 30,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 60.0),
+                    child: Center(
+                      // child: Container(
+                      //   width: 200,
+                      //   height: 150,
+                      //   child: Image.asset('asset/images/logo.png'),
+                      // ),
+                      child: _buildLogo(),
                     ),
                   ),
+                  SizedBox(
+                    height: 70,
+                  ),
+                  Padding(
+                    //padding: const EdgeInsets.only(left:15.0,right: 15.0,top:0,bottom: 0),
+                    padding: EdgeInsets.symmetric(horizontal: 15),
+                    child: TextField(
+                      controller: _login,
+                      textInputAction:
+                          TextInputAction.next, // Moves focus to next.
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [
+                        // obrigatório
+                        FilteringTextInputFormatter.digitsOnly,
+                        CpfInputFormatter(),
+                      ],
+                      decoration: InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: 'CPF',
+                          hintText: 'Entre com seu cpf'),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(
+                        left: 15.0, right: 15.0, top: 15, bottom: 0),
+                    child: TextField(
+                      onSubmitted: (value) {
+                        logar(this._login.text, this._senha.text, context);
+                      },
+                      controller: _senha,
+                      obscureText: !this._passwordVisible,
+                      decoration: InputDecoration(
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              // Based on passwordVisible state choose the icon
+                              _passwordVisible
+                                  ? Icons.visibility
+                                  : Icons.visibility_off,
+                              color: Theme.of(context).primaryColorDark,
+                            ),
+                            onPressed: () {
+                              FocusScope.of(context).unfocus();
+                              setState(() {
+                                _passwordVisible = !_passwordVisible;
+                              });
+                            },
+                          ),
+                          border: OutlineInputBorder(),
+                          labelText: 'SENHA',
+                          hintText: 'Entre com sua senha'),
+                    ),
+                  ),
+                  FlatButton(
+                    onPressed: () {
+                      showModalBottomSheet(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.only(
+                              topRight: Radius.circular(30.0),
+                              topLeft: Radius.circular(30.0),
+                            ),
+                          ),
+                          isDismissible: false,
+                          context: context,
+                          builder: (context) {
+                            return StatefulBuilder(builder:
+                                (BuildContext context, StateSetter setState) {
+                              return bottomSheetMenuRecuperarSenha(setState);
+                            });
+                          });
+                    },
+                    child: Text(
+                      'Esqueci minha senha',
+                      style: TextStyle(color: Colors.black, fontSize: 15),
+                    ),
+                  ),
+                  _buildBtnLogar(context),
+                  _buildInformacaoNetWork(),
+                  SizedBox(
+                    height: 130,
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => PrimeiroAcessoPage()));
+                    },
+                    child: Text(
+                      'Novo usuário? Criar conta',
+                    ),
+                  )
+                ],
+              ),
+            ),
           );
   }
 
@@ -469,18 +480,17 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
       padding:
           const EdgeInsets.only(left: 15.0, right: 15.0, top: 15, bottom: 0),
       child: Center(
-        child: TextFormField(
-          inputFormatters: [
+          child: TextFormField(
+              inputFormatters: [
             FilteringTextInputFormatter.digitsOnly,
             CpfInputFormatter(),
           ],
-          keyboardType: TextInputType.number,
-          controller: _cpfRecuperar,
-          decoration: InputDecoration(
-            labelText: 'CPF',
-          ),
-        ),
-      ),
+              keyboardType: TextInputType.number,
+              controller: _cpfRecuperarSenha,
+              decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: 'CPF',
+                  hintText: 'Entre com seu cpf'))),
     );
   }
 
@@ -630,6 +640,103 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
         _callCircular = false;
         _logando = false;
       });
+    }
+  }
+
+  Widget bottomSheetMenuRecuperarSenha(StateSetter setState) {
+    return Container(
+      height: MediaQuery.of(context).size.height * 0.4,
+      width: MediaQuery.of(context).size.width,
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(20)),
+      margin: EdgeInsets.symmetric(
+        horizontal: 20,
+        vertical: 20,
+      ),
+      child: Column(
+        children: <Widget>[
+          Text(
+            "INSIRA CPF PARA RECUPERAR SUA SENHA",
+            style: TextStyle(
+              fontSize: 16.0,
+            ),
+          ),
+          SizedBox(
+            height: 20,
+          ),
+          _buildEmail(),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              // ignore: deprecated_member_use
+              FlatButton.icon(
+                icon: Icon(Icons.dangerous),
+                onPressed: () {
+                  circularButtonRecuperarSenha = false;
+                  Navigator.pop(context);
+                },
+                label: Text("Voltar"),
+              ),
+              // ignore: deprecated_member_use
+              FlatButton.icon(
+                icon: Icon(Icons.email),
+                onPressed: () async {
+                  if (_verificarCpfRecuperarSenha(
+                      this._cpfRecuperarSenha.text)) {
+                    circularButtonRecuperarSenha = true;
+                    var teste = await enviarEmailEsqueciSenha(
+                        this._cpfRecuperarSenha.text);
+                  }
+                  setState(() {});
+                },
+                label: Text("Recuperar senha"),
+              ),
+            ],
+          ),
+          SizedBox(height: MediaQuery.of(context).size.height * 0.03),
+          if (circularButtonRecuperarSenha) CircularProgressIndicator()
+        ],
+      ),
+    );
+  }
+
+  bool _verificarCpfRecuperarSenha(String cpf) {
+    if (cpf.length != 14) {
+      this.showAlertDialog(context, "CPF deve possuir 11 digitos");
+      return false;
+    }
+    return true;
+  }
+
+  Future<bool> enviarEmailEsqueciSenha(String login) async {
+    try {
+      final response = await http.get(
+          Uri.parse('${baseUrl}Login/recuperar_senha?cpf=' + login),
+          headers: <String, String>{
+            'Content-Type': 'application/json; charset=UTF-8',
+          });
+
+      if (response.statusCode == 200 || response.statusCode == 204) {
+        if (response.body != "") {
+          Map<String, dynamic> userMap = jsonDecode(response.body);
+
+          Usuario user = new Usuario();
+
+          user = Usuario.fromJson(userMap);
+          this.showAlertDialog(
+              context, "Foi enviado um email para ${user.email}");
+          circularButtonRecuperarSenha = false;
+        } else {
+          circularButtonRecuperarSenha = false;
+          showAlertDialog(context, "CPF NÃO CADASTRADO.");
+        }
+        return true;
+      }
+    } catch (e) {
+      print(e);
+      showAlertDialog(context,
+          "Oppssss. Parece que nossos servidores não estão respondendo bem.");
+      circularButtonRecuperarSenha = false;
+      return true;
     }
   }
 }

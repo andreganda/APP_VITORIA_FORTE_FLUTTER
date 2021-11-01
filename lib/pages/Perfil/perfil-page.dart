@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
@@ -9,6 +10,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:vitoria_forte/Model/Usuario.dart';
 import 'package:vitoria_forte/widget/menu-widget.dart';
 import 'package:vitoria_forte/widget/textfield_widget.dart';
+import 'package:flutter/widgets.dart';
 
 import '../../constants.dart';
 
@@ -88,12 +90,17 @@ class _PerfilPageState extends State<PerfilPage> {
       },
       child: Center(
         child: Stack(children: <Widget>[
-          CircleAvatar(
-            radius: 80.0,
-            backgroundImage: _imageFile == null
-                ? NetworkImage(this.fotoUsuario)
-                : FileImage(File(_imageFile.path)),
-          ),
+          _buildCacheImage(),
+          // CachedNetworkImage(
+          //   maxHeightDiskCache: 200,
+          //   imageUrl: 'https://via.placeholder.com/3000x2000',
+          // ),
+          // CircleAvatar(
+          //   radius: 80.0,
+          //   backgroundImage: _imageFile == null
+          //       ? NetworkImage(this.fotoUsuario)
+          //       : FileImage(File(_imageFile.path)),
+          // ),
           Positioned(
             bottom: 20.0,
             right: 20.0,
@@ -113,6 +120,23 @@ class _PerfilPageState extends State<PerfilPage> {
           ),
         ]),
       ),
+    );
+  }
+
+  Widget _buildCacheImage() {
+    return CachedNetworkImage(
+      placeholder: (context, url) => CircularProgressIndicator(),
+      errorWidget: (context, url, error) => new Icon(Icons.error),
+      fit: BoxFit.contain,
+      imageUrl: 'https://via.placeholder.com/3000x2000',
+      imageBuilder: (context, imageProvider) {
+        return CircleAvatar(
+          radius: 80.0,
+          backgroundImage: _imageFile == null
+              ? NetworkImage(this.fotoUsuario)
+              : FileImage(File(_imageFile.path)),
+        );
+      },
     );
   }
 
@@ -216,13 +240,15 @@ class _PerfilPageState extends State<PerfilPage> {
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
-      body: jsonEncode(<String, String>{
-        'base64': base64,
-      }),
+      body: jsonEncode(
+          <String, String>{'base64': base64, 'userCpf': this.userPage.cpf}),
     );
 
-    if (response.statusCode == 200) {
-      print("Deu certo.");
+    if (response.statusCode == 200 || response.statusCode == 204) {
+      if (response.body != "") {
+        _saveUserLocalStore(response.body);
+      }
+      _getUser();
     }
   }
 
@@ -240,6 +266,11 @@ class _PerfilPageState extends State<PerfilPage> {
     return bytes;
   }
 
+  _saveUserLocalStore(String userJson) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('userJson', userJson);
+  }
+
   _getUser() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     try {
@@ -249,7 +280,7 @@ class _PerfilPageState extends State<PerfilPage> {
       setState(() {
         this.userPage = user;
         if (this.userPage.foto != "") {
-          this.fotoUsuario = this.userPage.foto;
+          this.fotoUsuario = url + "/" + this.userPage.foto;
         }
       });
     } catch (e) {}

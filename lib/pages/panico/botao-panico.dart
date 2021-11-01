@@ -26,14 +26,21 @@ class _PanicoPageState extends State<PanicoPage> {
     super.initState();
     _determinePosition();
     _getUser();
-    hubConnection.onclose((_) {
-      print("Conexão perdida");
-      startConnection();
-    });
+
+    // hubConnection.onclose((_) {
+    //   print("Conexão perdida");
+    //   startConnection();
+    // });
 
     hubConnection.on("ReceiveMessage", onReceiveMessage);
 
     startConnection();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    hubConnection.stop();
   }
 
   void startConnection() async {
