@@ -1,4 +1,4 @@
-package com.example.vitoria_forte
+package com.flutter.integra_mobile.ganco.bits
 
 import io.flutter.embedding.android.FlutterActivity
 
