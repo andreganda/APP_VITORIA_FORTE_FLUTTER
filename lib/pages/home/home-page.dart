@@ -87,7 +87,7 @@ Widget _buildContainer(
               msgBtn,
               style: TextStyle(
                   color: Colors.white,
-                  fontSize: 25,
+                  fontSize: MediaQuery.of(context).size.width * 0.06,
                   fontWeight: FontWeight.bold),
             )
           ],

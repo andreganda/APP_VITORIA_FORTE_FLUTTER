@@ -14,3 +14,7 @@ const mainColor = Color(0xff2470c7);
 const url = 'https://oaksolucoes.com.br';
 const baseUrl = url + "/api/";
 const baseUrlHub = url + "/chatHub";
+
+// const url = 'http://10.0.0.100:45456';
+// const baseUrl = url + "/api/";
+// const baseUrlHub = url + "/chatHub";

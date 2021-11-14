@@ -141,7 +141,9 @@ class _DenunciarPageState extends State<DenunciarPage> {
     var switchListTile = SwitchListTile(
       title: Text(
         'DENÚNCIA ANÔNIMA?',
-        style: TextStyle(fontWeight: FontWeight.bold),
+        style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: MediaQuery.of(context).size.width * 0.05),
       ),
       value: _lights,
       onChanged: (bool value) {
@@ -177,7 +179,10 @@ class _DenunciarPageState extends State<DenunciarPage> {
   Widget _buildTextTipoDenuncia(String text, Color color) {
     return Text(
       text,
-      style: TextStyle(color: color, fontSize: 18, fontWeight: FontWeight.bold),
+      style: TextStyle(
+          color: color,
+          fontSize: MediaQuery.of(context).size.width * 0.05,
+          fontWeight: FontWeight.bold),
     );
   }
 

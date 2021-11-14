@@ -178,7 +178,9 @@ class _PanicoPageState extends State<PanicoPage> {
                   child: Text(
                     'PRESSIONE O BOTÃO POR 5 SEGUNDOS PARA PEDIR SOCORRO.',
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: MediaQuery.of(context).size.width * 0.06),
                   ),
                 ),
                 SizedBox(
@@ -198,8 +200,8 @@ class _PanicoPageState extends State<PanicoPage> {
                   },
                   child: Container(
                     padding: const EdgeInsets.all(0.0),
-                    width: 250.0,
-                    height: 250.0,
+                    width: MediaQuery.of(context).size.width * 0.6,
+                    height: MediaQuery.of(context).size.width * 0.6,
                     decoration: new BoxDecoration(
                       color: Colors.red,
                       shape: BoxShape.circle,
@@ -222,7 +224,9 @@ class _PanicoPageState extends State<PanicoPage> {
                           'PEDIDO DE SOCORRO ENVIADO',
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 30),
+                              fontWeight: FontWeight.bold,
+                              fontSize:
+                                  MediaQuery.of(context).size.width * 0.06),
                         ),
                       )
                     : SizedBox.shrink(),
