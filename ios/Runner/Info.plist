@@ -19,18 +19,26 @@
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>O aplicativo necessita de acesso a sua câmera para atualizção de perfil.</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Para utilizar as funções da aplicação, precisamos do acesso a sua localização.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Para utilizar o aplicativo, é necessário dar acesso a sua localização.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>O aplicativo pode precisar acessar suas fotos para que você atualize seu perfil</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
+	<key>UIStatusBarHidden</key>
+	<true/>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array>
@@ -41,13 +49,5 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
-
-	<!-- Inicio permissões do geolocation IOS -->
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>This app needs access to location when open.</string>
-	<key>NSLocationAlwaysUsageDescription</key>
-	<string>This app needs access to location when in the background.</string>
-	<!-- Fim permissões do geolocation IOS -->
-
 </dict>
 </plist>
