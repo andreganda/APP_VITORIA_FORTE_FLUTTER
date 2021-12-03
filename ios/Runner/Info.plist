@@ -23,11 +23,11 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSCameraUsageDescription</key>
-	<string>O aplicativo necessita de acesso a sua câmera para atualizção de perfil.</string>
+	<string>O aplicativo necessita de acesso a sua câmera para atualização de perfil.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
-	<string>Para utilizar as funções da aplicação, precisamos do acesso a sua localização.</string>
+	<string>O aplicativo precisa de acesso a sua localização para que o botão de pânico funcione corretamente, em caso de envio de pedido de socorro.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Para utilizar o aplicativo, é necessário dar acesso a sua localização.</string>
+	<string>O aplicativo precisa de acesso a sua localização para que o botão de pânico funcione corretamente, em caso de envio de pedido de socorro.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>O aplicativo pode precisar acessar suas fotos para que você atualize seu perfil</string>
 	<key>UILaunchStoryboardName</key>
