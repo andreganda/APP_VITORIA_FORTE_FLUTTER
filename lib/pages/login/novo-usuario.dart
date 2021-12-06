@@ -324,4 +324,5 @@ class _NovoUsuarioPageState extends State<NovoUsuarioPage> {
       ),
     );
   }
+
 }

@@ -9,6 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:vitoria_forte/Model/Usuario.dart';
 import 'package:vitoria_forte/pages/index.dart';
 import 'package:vitoria_forte/constants.dart';
+import 'package:vitoria_forte/pages/login/acesso-inicial-page.dart';
 import 'package:vitoria_forte/pages/login/primeiro-acesso.dart';
 import 'package:connectivity/connectivity.dart';
 
@@ -200,14 +201,14 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
                   _buildBtnLogar(context),
                   _buildInformacaoNetWork(),
                   SizedBox(
-                    height: 130,
+                    height: 50,
                   ),
                   GestureDetector(
                     onTap: () {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (_) => PrimeiroAcessoPage()));
+                              builder: (_) => AcessoInicialPage()));
                     },
                     child: Text(
                       'Novo usuário? Criar conta',
@@ -324,8 +325,14 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
               });
             } else {
               _saveUserLocalStore(response.body);
-              Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (context) => IndexPage()));
+
+              if (user.primeiroAcesso == 0) {
+                Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(builder: (context) => IndexPage()));
+              } else {
+                Navigator.of(context).pushReplacement(MaterialPageRoute(
+                    builder: (context) => AcessoInicialPage()));
+              }
             }
           } else {
             showAlertDialog(context, "Usuário e/o senha inválidos.");
