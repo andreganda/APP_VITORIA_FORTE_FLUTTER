@@ -12,6 +12,7 @@ import 'package:vitoria_forte/Model/Usuario.dart';
 import 'package:vitoria_forte/Model/Veiculo.dart';
 
 import '../../constants.dart';
+import '../index.dart';
 
 class AcessoInicialPage extends StatefulWidget {
   @override
@@ -50,7 +51,7 @@ class _AcessoInicialPageState extends State<AcessoInicialPage> {
   var _placaController = TextEditingController();
   var _modeloController = TextEditingController();
 
-  var veiculos = <Veiculo>[];
+  List<Veiculo> veiculos = <Veiculo>[];
 
   bool _callCircular = false;
   SetoresLocais setorLocal = new SetoresLocais();
@@ -74,9 +75,9 @@ class _AcessoInicialPageState extends State<AcessoInicialPage> {
         } else {
           _formKey.currentState.save();
           _salvarDadosPrimeiroAcesso();
-          setState(() {
-            _callCircular = true;
-          });
+          // setState(() {
+          //   _callCircular = true;
+          // });
         }
       },
     );
@@ -489,6 +490,7 @@ class _AcessoInicialPageState extends State<AcessoInicialPage> {
 
   Widget _buildListViewVeiculos() {
     return SizedBox(
+      // height: 100,
       child: ListView.builder(
         shrinkWrap: true,
         scrollDirection: Axis.vertical,
@@ -577,6 +579,8 @@ class _AcessoInicialPageState extends State<AcessoInicialPage> {
   }
 
   _salvarDadosPrimeiroAcesso() async {
+    //String listVeiculos = jsonEncode(veiculos);
+
     try {
       final response = await http.post(
         Uri.parse('${baseUrl}Login/SalvarDadosPrimeiroAcesso'),
@@ -597,11 +601,16 @@ class _AcessoInicialPageState extends State<AcessoInicialPage> {
       );
 
       if (response.statusCode == 200 || response.statusCode == 204) {
-        showAlertDialog(
-          context,
-          "Parabéns",
-          "Sua denuncia foi enviada com sucesso",
-        );
+        if (response.body == "1") {
+          Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (context) => IndexPage()));
+        } else {
+          showAlertDialog(
+            context,
+            "OPSSS...",
+            "Parece que algo deu errado.",
+          );
+        }
 
         setState(() {
           _callCircular = false;

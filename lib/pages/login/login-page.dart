@@ -624,11 +624,14 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
             });
           } else {
             _saveUserLocalStore(response.body);
-            Navigator.of(context).pushReplacement(
-              MaterialPageRoute(
-                builder: (context) => IndexPage(),
-              ),
-            );
+
+            if (user.primeiroAcesso == 0) {
+              Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (context) => IndexPage()));
+            } else {
+              Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (context) => AcessoInicialPage()));
+            }
           }
         }
       } else {

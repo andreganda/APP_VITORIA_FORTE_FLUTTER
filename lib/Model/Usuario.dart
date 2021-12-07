@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 class Usuario {
   int tipoUsuario;
   String funcao;
@@ -9,6 +11,7 @@ class Usuario {
   String cpf;
   String nome;
   String dataNascimento;
+  String dataNascimentoFormat;
   String telefone;
   String email;
   String dataCriacao;
@@ -72,6 +75,11 @@ class Usuario {
     foto = json['foto'];
     status = json['status'];
     primeiroAcesso = json['primeiroAcesso'];
+
+    var parsedDate = DateTime.parse(dataNascimento);
+
+    final DateFormat formatter = DateFormat('dd/MM/yyyy');
+    dataNascimentoFormat = formatter.format(parsedDate);
   }
 
   Map<String, dynamic> toJson() {
@@ -84,7 +92,7 @@ class Usuario {
     data['id'] = this.id;
     data['cpf'] = this.cpf;
     data['nome'] = this.nome;
-    data['dataNascimento'] = this.dataNascimento;
+    data['dataNascimento'] = this.dataNascimento.toString();
     data['telefone'] = this.telefone;
     data['email'] = this.email;
     data['dataCriacao'] = this.dataCriacao;

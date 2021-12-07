@@ -63,7 +63,7 @@ class _PerfilPageState extends State<PerfilPage> {
           SizedBox(height: 15),
           TextFieldWidget(
             label: 'Data Nascimento:',
-            text: this.userPage.dataNascimento.toString(),
+            text: this.userPage.dataNascimentoFormat.toString(),
           ),
           SizedBox(height: 15),
           TextFieldWidget(
