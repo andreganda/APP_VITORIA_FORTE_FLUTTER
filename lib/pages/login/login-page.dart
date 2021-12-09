@@ -102,122 +102,125 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    return _logando
-        ? _buildPreparacao()
-        : Scaffold(
-            backgroundColor: Colors.white,
-            body: SingleChildScrollView(
-              child: Column(
-                children: <Widget>[
-                  SizedBox(
-                    height: 30,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 60.0),
-                    child: Center(
-                      // child: Container(
-                      //   width: 200,
-                      //   height: 150,
-                      //   child: Image.asset('asset/images/logo.png'),
-                      // ),
-                      child: _buildLogo(),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 70,
-                  ),
-                  Padding(
-                    //padding: const EdgeInsets.only(left:15.0,right: 15.0,top:0,bottom: 0),
-                    padding: EdgeInsets.symmetric(horizontal: 15),
-                    child: TextField(
-                      controller: _login,
-                      textInputAction:
-                          TextInputAction.next, // Moves focus to next.
-                      keyboardType: TextInputType.number,
-                      inputFormatters: [
-                        // obrigatório
-                        FilteringTextInputFormatter.digitsOnly,
-                        CpfInputFormatter(),
-                      ],
-                      decoration: InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'CPF',
-                          hintText: 'Entre com seu cpf'),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(
-                        left: 15.0, right: 15.0, top: 15, bottom: 0),
-                    child: TextField(
-                      onSubmitted: (value) {
-                        logar(this._login.text, this._senha.text, context);
-                      },
-                      controller: _senha,
-                      obscureText: !this._passwordVisible,
-                      decoration: InputDecoration(
-                          suffixIcon: IconButton(
-                            icon: Icon(
-                              // Based on passwordVisible state choose the icon
-                              _passwordVisible
-                                  ? Icons.visibility
-                                  : Icons.visibility_off,
-                              color: Theme.of(context).primaryColorDark,
-                            ),
-                            onPressed: () {
-                              FocusScope.of(context).unfocus();
-                              setState(() {
-                                _passwordVisible = !_passwordVisible;
-                              });
-                            },
-                          ),
-                          border: OutlineInputBorder(),
-                          labelText: 'SENHA',
-                          hintText: 'Entre com sua senha'),
-                    ),
-                  ),
-                  FlatButton(
-                    onPressed: () {
-                      showModalBottomSheet(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.only(
-                              topRight: Radius.circular(30.0),
-                              topLeft: Radius.circular(30.0),
-                            ),
-                          ),
-                          isDismissible: false,
-                          context: context,
-                          builder: (context) {
-                            return StatefulBuilder(builder:
-                                (BuildContext context, StateSetter setState) {
-                              return bottomSheetMenuRecuperarSenha(setState);
-                            });
-                          });
-                    },
-                    child: Text(
-                      'Esqueci minha senha',
-                      style: TextStyle(color: Colors.black, fontSize: 15),
-                    ),
-                  ),
-                  _buildBtnLogar(context),
-                  _buildInformacaoNetWork(),
-                  SizedBox(
-                    height: 50,
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (_) => AcessoInicialPage()));
-                    },
-                    child: Text(
-                      'Novo usuário? Criar conta',
-                    ),
-                  )
-                ],
+    if (_logando) {
+      return _buildPreparacao();
+    } else {
+      return Scaffold(
+        backgroundColor: Colors.white,
+        body: SingleChildScrollView(
+          child: Column(
+            children: <Widget>[
+              SizedBox(
+                height: 30,
               ),
-            ),
-          );
+              Padding(
+                padding: const EdgeInsets.only(top: 60.0),
+                child: Center(
+                  // child: Container(
+                  //   width: 200,
+                  //   height: 150,
+                  //   child: Image.asset('asset/images/logo.png'),
+                  // ),
+                  child: _buildLogo(),
+                ),
+              ),
+              SizedBox(
+                height: 70,
+              ),
+              Padding(
+                //padding: const EdgeInsets.only(left:15.0,right: 15.0,top:0,bottom: 0),
+                padding: EdgeInsets.symmetric(horizontal: 15),
+                child: TextField(
+                  controller: _login,
+                  textInputAction: TextInputAction.next, // Moves focus to next.
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [
+                    // obrigatório
+                    FilteringTextInputFormatter.digitsOnly,
+                    CpfInputFormatter(),
+                  ],
+                  decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: 'CPF',
+                      hintText: 'Entre com seu cpf'),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(
+                    left: 15.0, right: 15.0, top: 15, bottom: 0),
+                child: TextField(
+                  onSubmitted: (value) {
+                    logar(this._login.text, this._senha.text, context);
+                  },
+                  controller: _senha,
+                  obscureText: !this._passwordVisible,
+                  decoration: InputDecoration(
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          // Based on passwordVisible state choose the icon
+                          _passwordVisible
+                              ? Icons.visibility
+                              : Icons.visibility_off,
+                          color: Theme.of(context).primaryColorDark,
+                        ),
+                        onPressed: () {
+                          FocusScope.of(context).unfocus();
+                          setState(() {
+                            _passwordVisible = !_passwordVisible;
+                          });
+                        },
+                      ),
+                      border: OutlineInputBorder(),
+                      labelText: 'SENHA',
+                      hintText: 'Entre com sua senha'),
+                ),
+              ),
+              FlatButton(
+                onPressed: () {
+                  showModalBottomSheet(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.only(
+                          topRight: Radius.circular(30.0),
+                          topLeft: Radius.circular(30.0),
+                        ),
+                      ),
+                      isDismissible: false,
+                      context: context,
+                      builder: (context) {
+                        return StatefulBuilder(builder:
+                            (BuildContext context, StateSetter setState) {
+                          return bottomSheetMenuRecuperarSenha(setState);
+                        });
+                      });
+                },
+                child: Text(
+                  'Esqueci minha senha',
+                  style: TextStyle(color: Colors.black, fontSize: 15),
+                ),
+              ),
+              _buildBtnLogar(context),
+              _buildInformacaoNetWork(),
+              SizedBox(
+                height: 50,
+              ),
+              //_buildBtnNovoUsuario(context)
+            ],
+          ),
+        ),
+      );
+    }
+  }
+
+  GestureDetector _buildBtnNovoUsuario(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+            context, MaterialPageRoute(builder: (_) => AcessoInicialPage()));
+      },
+      child: Text(
+        'Novo usuário? Criar conta',
+      ),
+    );
   }
 
   Container _buildBtnLogar(BuildContext context) {

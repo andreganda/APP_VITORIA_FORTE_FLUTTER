@@ -10,6 +10,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:vitoria_forte/Model/SetoresLocais.dart';
 import 'package:vitoria_forte/Model/Usuario.dart';
 import 'package:vitoria_forte/Model/Veiculo.dart';
+import 'package:vitoria_forte/pages/login/login-page.dart';
 
 import '../../constants.dart';
 import '../index.dart';
@@ -68,16 +69,34 @@ class _AcessoInicialPageState extends State<AcessoInicialPage> {
     return FlatButton(
       color: Colors.blue,
       textColor: Colors.white,
-      child: Text('Enviar Dados'),
+      child: Container(
+        child: Center(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (!_callCircular) Text('Salvar Cadastro'),
+              if (_callCircular) Text('Enviando dados, Aguarde'),
+              if (_callCircular)
+                SizedBox(width: MediaQuery.of(context).size.width * 0.02),
+              if (_callCircular)
+                SizedBox(
+                  child: CircularProgressIndicator(),
+                  height: 20.0,
+                  width: 20.0,
+                )
+            ],
+          ),
+        ),
+      ),
       onPressed: () {
         if (!_formKey.currentState.validate()) {
           return;
         } else {
           _formKey.currentState.save();
           _salvarDadosPrimeiroAcesso();
-          // setState(() {
-          //   _callCircular = true;
-          // });
+          setState(() {
+            _callCircular = true;
+          });
         }
       },
     );
@@ -473,7 +492,9 @@ class _AcessoInicialPageState extends State<AcessoInicialPage> {
             tooltip: 'Incluir veículo',
             onPressed: () {
               Veiculo veiculo = Veiculo(
-                  Placa: _placaController.text, Modelo: _modeloController.text);
+                  id: 0,
+                  placa: _placaController.text,
+                  modelo: _modeloController.text);
               veiculos.add(veiculo);
 
               _placaController.text = "";
@@ -496,8 +517,8 @@ class _AcessoInicialPageState extends State<AcessoInicialPage> {
         scrollDirection: Axis.vertical,
         itemCount: veiculos.length,
         itemBuilder: (context, index) {
-          var placa = veiculos[index].Placa;
-          var modelo = veiculos[index].Modelo;
+          var placa = veiculos[index].placa;
+          var modelo = veiculos[index].modelo;
 
           return ListTile(
             leading: Icon(Icons.car_repair),
@@ -551,6 +572,8 @@ class _AcessoInicialPageState extends State<AcessoInicialPage> {
             listLocaisString.add(
                 "${_local.id} : ${_local.descricaoSetor} -> ${_local.descricao}");
           }
+
+          setState(() {});
         }
       }
     } catch (e) {}
@@ -651,6 +674,23 @@ class _AcessoInicialPageState extends State<AcessoInicialPage> {
     return Scaffold(
       appBar: AppBar(
         title: new Text('Primeiro acesso'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.login),
+            tooltip: 'Voltar para login',
+            onPressed: () async {
+              ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Página de login')));
+
+              SharedPreferences preferences =
+                  await SharedPreferences.getInstance();
+              await preferences.clear();
+
+              Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (context) => LoginPage()));
+            },
+          ),
+        ],
       ),
       body: Container(
         margin: EdgeInsets.all(15),
@@ -658,39 +698,35 @@ class _AcessoInicialPageState extends State<AcessoInicialPage> {
           key: _formKey,
           child: SingleChildScrollView(
             physics: ScrollPhysics(),
-            child: Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  _buildLabel('DADOS PESSOAIS'),
-                  _buildSetores(),
-                  _buildLocais(),
-                  _buildDatanascimento(),
-                  _buildNumero(),
-                  _buildTelefone(),
-                  SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.04,
-                  ),
-                  _buildLabel('CONTATO DE EMERGÊNCIA'),
-                  _buildNomeContatoEmergencia(),
-                  _buildTelefoneEmergencia(),
-                  SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.04,
-                  ),
-                  _buildLabel('CADASTRE SEU(S) VEÍCULO(S)'),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  _buildVeiculos(),
-                  _buildListViewVeiculos(),
-                  //_buildSenha(),
-                  //_buildConfirmar(),
-
-                  if (_callCircular) CircularProgressIndicator(),
-                  SizedBox(height: 10),
-                  _buildButtonEnviar(),
-                ],
-              ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                _buildLabel('DADOS PESSOAIS'),
+                _buildSetores(),
+                _buildLocais(),
+                _buildDatanascimento(),
+                _buildNumero(),
+                _buildTelefone(),
+                SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.04,
+                ),
+                _buildLabel('CONTATO DE EMERGÊNCIA'),
+                _buildNomeContatoEmergencia(),
+                _buildTelefoneEmergencia(),
+                SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.04,
+                ),
+                _buildLabel('CADASTRE SEU(S) VEÍCULO(S)'),
+                SizedBox(
+                  height: 10,
+                ),
+                _buildVeiculos(),
+                _buildListViewVeiculos(),
+                //_buildSenha(),
+                //_buildConfirmar(),
+                SizedBox(height: 30),
+                _buildButtonEnviar(),
+              ],
             ),
           ),
         ),
