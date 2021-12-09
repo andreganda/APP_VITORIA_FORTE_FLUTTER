@@ -164,7 +164,7 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
                           color: Theme.of(context).primaryColorDark,
                         ),
                         onPressed: () {
-                          FocusScope.of(context).unfocus();
+                          //FocusScope.of(context).unfocus();
                           setState(() {
                             _passwordVisible = !_passwordVisible;
                           });
@@ -658,7 +658,7 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
 
   Widget bottomSheetMenuRecuperarSenha(StateSetter setState) {
     return Container(
-      height: MediaQuery.of(context).size.height * 0.4,
+      height: MediaQuery.of(context).size.height * 0.7,
       width: MediaQuery.of(context).size.width,
       decoration: BoxDecoration(borderRadius: BorderRadius.circular(20)),
       margin: EdgeInsets.symmetric(

@@ -169,6 +169,7 @@ class _ContatosEmergenciaPageState extends State<ContatosEmergenciaPage> {
   }
 
   Future _getContatosEmergencia() async {
+    _carregando("Carregando...");
     try {
       final response = await http.get(
           Uri.parse('${baseUrl}Usuario/GetContatosEmergenciaMorador?cpf=' +
@@ -182,9 +183,11 @@ class _ContatosEmergenciaPageState extends State<ContatosEmergenciaPage> {
           Iterable decoded = jsonDecode(response.body);
           listContatosEmergencia =
               decoded.map((data) => ContatoEmergencia.fromJson(data)).toList();
-
+          Navigator.of(context).pop();
           setState(() {});
         }
+      } else {
+        Navigator.of(context).pop();
       }
     } catch (e) {
       print(e);

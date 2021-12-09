@@ -24,7 +24,7 @@ class _AcessoInicialPageState extends State<AcessoInicialPage> {
   @override
   void initState() {
     _getUser();
-    getSetoresLocais();
+
     super.initState();
   }
 
@@ -548,6 +548,7 @@ class _AcessoInicialPageState extends State<AcessoInicialPage> {
   }
 
   Future getSetoresLocais() async {
+    _carregando("Carregando...");
     try {
       final response = await http.get(
           Uri.parse('${baseUrl}Denuncia/listar_setores_locais'),
@@ -572,8 +573,10 @@ class _AcessoInicialPageState extends State<AcessoInicialPage> {
             listLocaisString.add(
                 "${_local.id} : ${_local.descricaoSetor} -> ${_local.descricao}");
           }
-
+          Navigator.of(context).pop();
           setState(() {});
+        } else {
+          Navigator.of(context).pop();
         }
       }
     } catch (e) {}
@@ -663,10 +666,51 @@ class _AcessoInicialPageState extends State<AcessoInicialPage> {
       Map<String, dynamic> userMap = jsonDecode(prefs.getString('userJson'));
       Usuario user = new Usuario();
       user = Usuario.fromJson(userMap);
+      getSetoresLocais();
       setState(() {
         userPage = user;
       });
     } catch (e) {}
+  }
+
+  void _carregando(String msg) {
+    AlertDialog dialog = new AlertDialog(
+      content: new Container(
+        width: 260.0,
+        height: 120.0,
+        child: Center(
+          child: Column(
+            children: [
+              Text(
+                msg,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 25,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              CircularProgressIndicator(),
+            ],
+          ),
+        ),
+        decoration: new BoxDecoration(
+          shape: BoxShape.rectangle,
+          color: const Color(0xFFFFFF),
+          borderRadius: new BorderRadius.all(new Radius.circular(32.0)),
+        ),
+      ),
+    );
+
+    showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (BuildContext context) {
+        return dialog;
+      },
+    );
   }
 
   @override

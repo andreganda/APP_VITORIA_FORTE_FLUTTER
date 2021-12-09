@@ -146,6 +146,7 @@ class _VeiculosPageState extends State<VeiculosPage> {
   }
 
   Future _getVeiculos() async {
+    _carregando("Carregando...");
     try {
       final response = await http.get(
           Uri.parse('${baseUrl}Usuario/GetVeiculosMorador?cpf=' + userPage.cpf),
@@ -157,9 +158,11 @@ class _VeiculosPageState extends State<VeiculosPage> {
         if (response.body != "") {
           Iterable decoded = jsonDecode(response.body);
           veiculos = decoded.map((data) => Veiculo.fromJson(data)).toList();
-
+          Navigator.of(context).pop();
           setState(() {});
         }
+      } else {
+        Navigator.of(context).pop();
       }
     } catch (e) {
       print(e);
