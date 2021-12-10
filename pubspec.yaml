@@ -2,7 +2,7 @@ name: vitoria_forte
 description: Sistema de interação e atendimento aos moradores dos condomínios atendidos pelo sistema INtegra da Oak Soluções.
 
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
-version: 1.0.0+3
+version: 3.0.0+3
 
 environment:
   sdk: ">=2.7.0 <3.0.0"
