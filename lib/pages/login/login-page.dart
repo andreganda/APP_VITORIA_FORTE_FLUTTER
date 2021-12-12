@@ -10,12 +10,11 @@ import 'package:vitoria_forte/Model/Usuario.dart';
 import 'package:vitoria_forte/pages/index.dart';
 import 'package:vitoria_forte/constants.dart';
 import 'package:vitoria_forte/pages/login/acesso-inicial-page.dart';
-import 'package:vitoria_forte/pages/login/primeiro-acesso.dart';
 import 'package:connectivity/connectivity.dart';
 
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+// import 'package:flutter/foundation.dart';
+// import 'package:flutter/material.dart';
+// import 'package:flutter/services.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -28,7 +27,7 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
   StreamSubscription<ConnectivityResult> _connectivitySubscription;
 
   @override
-  void initState() {
+  initState() {
     super.initState();
 
     WidgetsBinding.instance.addObserver(this);
@@ -38,7 +37,9 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
 
     initConnectivity();
     _getUser();
-    _determinePosition();
+
+    //_determinePosition();
+    _getCurrentLocation();
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
@@ -200,6 +201,7 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
               ),
               _buildBtnLogar(context),
               _buildInformacaoNetWork(),
+              _buildInformacaoGps(),
               SizedBox(
                 height: 50,
               ),
@@ -296,7 +298,7 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
 
   Future logar(String login, String senha, BuildContext context) async {
     try {
-      if (_verificarCampos(login, senha, context)) {
+      if (await _verificarCampos(login, senha, context)) {
         setState(() {
           _callCircular = true;
         });
@@ -358,18 +360,23 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
     }
   }
 
-  bool _verificarCampos(String login, String senha, BuildContext context) {
+  Future<bool> _verificarCampos(
+      String login, String senha, BuildContext context) async {
     if (login.isEmpty || senha.isEmpty) {
       showAlertDialog(context, "INSIRA UM LOGIN E/OU SENHA");
-      return false;
-    }
-    _determinePosition();
-    if (!_gpsAtivo) {
-      showAlertDialog(context, _msgErroGps);
-      return false;
+      //return false;
+      return Future<bool>.value(false);
     }
 
-    return true;
+    // _determinePosition();
+    // if (!_gpsAtivo) {
+    //   showAlertDialog(context, _msgErroGps);
+    //   await Future.delayed(Duration(milliseconds: 2000));
+    //   //return false;
+    // }
+
+    //return true;
+    return Future<bool>.value(true);
   }
 
   showAlertDialog(BuildContext context, String text) {
@@ -526,45 +533,65 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
     }
   }
 
+  _getCurrentLocation() {
+    Geolocator.getCurrentPosition(
+            desiredAccuracy: LocationAccuracy.best,
+            forceAndroidLocationManager: true)
+        .then((Position position) {
+      print(position);
+      setState(() {
+        _gpsAtivo = true;
+      });
+    }).catchError((e) {
+      _gpsAtivo = false;
+    });
+  }
+
   _determinePosition() async {
     try {
       bool serviceEnabled;
       LocationPermission permission;
       serviceEnabled = await Geolocator.isLocationServiceEnabled();
+
       if (!serviceEnabled) {
-        _msgErroGps = "Você precisa Ativar sua localização";
+        _msgErroGps =
+            "Sua localização esta desativada. Para que o Botão de Pânico funcione corretamente é necessário que tenhamos acesso a sua localização.";
         _gpsAtivo = false;
-        return Future.error('Location services are disabled.');
+
+        showAlertDialog(context, _msgErroGps);
+
+        return Future.error(
+            'Sua localização esta desativada. Para que o Botão de Pânico funcione corretamente é necessário que tenhamos acesso a sua localização.');
+      } else {
+        _gpsAtivo = true;
       }
 
       permission = await Geolocator.checkPermission();
+
       if (permission == LocationPermission.denied) {
         permission = await Geolocator.requestPermission();
         if (permission == LocationPermission.denied) {
           _msgErroGps =
-              "Você precisa permitir que o aplicativo acesse sua localização";
+              "Sua localização esta desativada. Para que o Botão de Pânico funcione corretamente é necessário que tenhamos acesso a sua localização.";
+          showAlertDialog(context, _msgErroGps);
           _gpsAtivo = false;
-          return Future.error('Location permissions are denied');
+          return Future.error(
+              'Sua localização esta desativada. Para que o Botão de Pânico funcione corretamente é necessário que tenhamos acesso a sua localização.');
         }
       }
 
       if (permission == LocationPermission.deniedForever) {
         _gpsAtivo = false;
         _msgErroGps =
-            "As permissões de localização para esse app estão permanentemente desativadas, vá em configurações e mude isso.";
-        return Future.error(
-            'Location permissions are permanently denied, we cannot request permissions.');
-      }
-
-      if (_gpsAtivo) Position position = await Geolocator.getCurrentPosition();
-      _gpsAtivo = true;
-
-      if (!_gpsAtivo) {
+            "As permissões de localização para esse app estão permanentemente desativadas. Para que o Botão de Pânico funcione corretamente é necessário que tenhamos acesso a sua localização.";
         showAlertDialog(context, _msgErroGps);
+        return Future.error(
+            "As permissões de localização para esse app estão permanentemente desativadas. Para que o Botão de Pânico funcione corretamente é necessário que tenhamos acesso a sua localização.");
       }
-    } catch (e) {
-      showAlertDialog(context, _msgErroGps);
-    }
+
+      //_gpsAtivo = true;
+
+    } catch (e) {}
   }
 
   Widget _buildInformacaoNetWork() {
@@ -583,6 +610,36 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
                     color: Colors.red,
                     fontSize: 16,
                     fontWeight: FontWeight.bold),
+              ),
+            ),
+          ),
+        ],
+      );
+    } else
+      return SizedBox.shrink();
+  }
+
+  Widget _buildInformacaoGps() {
+    if (!_gpsAtivo) {
+      return Column(
+        children: [
+          SizedBox(
+            height: 10,
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Container(
+              height: MediaQuery.of(context).size.height * 0.1,
+              child: Container(
+                child: Center(
+                  child: Text(
+                    'Para que o Botão de Pânico funcione corretamente é necessário que tenhamos acesso a sua localização.',
+                    style: TextStyle(
+                        color: Colors.red,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold),
+                  ),
+                ),
               ),
             ),
           ),

@@ -117,9 +117,11 @@ class _PanicoPageState extends State<PanicoPage> {
       LocationPermission permission;
       serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
-        _msgErroGps = "Você precisa Ativar sua localização";
+        _msgErroGps =
+            "Sua localização esta desativada. Para que o Botão de Pânico funcione corretamente é necessário que tenhamos acesso a sua localização.";
         _gpsAtivo = false;
-        return Future.error('Location services are disabled.');
+        return Future.error(
+            'Sua localização esta desativada. Para que o Botão de Pânico funcione corretamente é necessário que tenhamos acesso a sua localização.');
       }
 
       permission = await Geolocator.checkPermission();
@@ -127,33 +129,48 @@ class _PanicoPageState extends State<PanicoPage> {
         permission = await Geolocator.requestPermission();
         if (permission == LocationPermission.denied) {
           _msgErroGps =
-              "Você precisa permitir que o aplicativo acesse sua localização";
+              "Sua localização esta desativada. Para que o Botão de Pânico funcione corretamente é necessário que tenhamos acesso a sua localização.";
           _gpsAtivo = false;
-          return Future.error('Location permissions are denied');
+          return Future.error(
+              'Sua localização esta desativada. Para que o Botão de Pânico funcione corretamente é necessário que tenhamos acesso a sua localização.');
         }
       }
 
       if (permission == LocationPermission.deniedForever) {
         _gpsAtivo = false;
         _msgErroGps =
-            "As permissões de localização para esse app estão permanentemente desativadas, vá em configurações e mude isso.";
+            "Sua localização esta desativada. Para que o Botão de Pânico funcione corretamente é necessário que tenhamos acesso a sua localização.";
         return Future.error(
-            'Location permissions are permanently denied, we cannot request permissions.');
+            'Sua localização esta desativada. Para que o Botão de Pânico funcione corretamente é necessário que tenhamos acesso a sua localização.');
       }
 
-      _gpsAtivo = true;
+      await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.best,
+      ).then((Position position) {
+        setState(() {
+          _posicaoUser =
+              "Minha posição: lat: ${position.latitude} -- lon: ${position.longitude}";
 
-      if (_gpsAtivo) {
-        Position position = await Geolocator.getCurrentPosition();
-        _posicaoUser =
-            "Posição: lat: ${position.latitude} -- lon: ${position.longitude}";
+          _latitude = position.latitude.toString();
+          _longitude = position.longitude.toString();
+        });
+      }).catchError((e) {
+        print(e);
+      });
 
-        _latitude = position.latitude.toString();
-        _longitude = position.longitude.toString();
+      // _gpsAtivo = true;
 
-        print(_posicaoUser);
-        setState(() {});
-      }
+      // if (_gpsAtivo) {
+      //   Position position = await Geolocator.getCurrentPosition();
+      //   _posicaoUser =
+      //       "Minha posição: lat: ${position.latitude} -- lon: ${position.longitude}";
+
+      //   _latitude = position.latitude.toString();
+      //   _longitude = position.longitude.toString();
+
+      //setState(() {});
+      //}
+
     } catch (e) {}
   }
 
