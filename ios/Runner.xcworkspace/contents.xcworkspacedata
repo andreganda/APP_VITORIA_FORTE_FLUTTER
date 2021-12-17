@@ -2,7 +2,7 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "group:/Users/user209825/Downloads/APP_VITORIA_FORTE_FLUTTER/ios/INtegra.xcodeproj">
+      location = "group:Runner.xcodeproj">
    </FileRef>
    <FileRef
       location = "group:Pods/Pods.xcodeproj">
