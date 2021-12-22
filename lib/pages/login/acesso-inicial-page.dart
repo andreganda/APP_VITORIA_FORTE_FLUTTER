@@ -57,11 +57,19 @@ class _AcessoInicialPageState extends State<AcessoInicialPage> {
   bool _callCircular = false;
   SetoresLocais setorLocal = new SetoresLocais();
   List<String> listSetoresString = [];
-  List<DropdownMenuItem> listLocais = [];
+  //List<DropdownMenuItem> listLocais = [];
   List<String> listLocaisString = [];
   List<String> listLocaisSearch = [];
+
+  List<String> listQuadraString = [];
+
+  List<String> listLoteString = [];
+  List<String> listLoteSearch = [];
+
   String _setor = "";
   String _local = "";
+  String _quadra = "";
+  String _lote = "";
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -421,6 +429,62 @@ class _AcessoInicialPageState extends State<AcessoInicialPage> {
         });
   }
 
+  Widget _buildQuadra() {
+    return DropdownSearch<String>(
+        mode: Mode.DIALOG,
+        showSelectedItems: true,
+        dropdownSearchDecoration: InputDecoration(
+          hintText: "Selecione uma Quadra",
+          labelText: "Quadra",
+          contentPadding: EdgeInsets.fromLTRB(12, 12, 0, 0),
+          //border: OutlineInputBorder(),
+        ),
+        items: listQuadraString,
+        showClearButton: true,
+        onChanged: (value) {
+          _quadra = value;
+          listLoteSearch = [];
+          if (value != null) {
+            var arrayId = value.split(':');
+            var quadraString = arrayId[1].trim();
+
+            listLoteSearch = listLoteString
+                .where((element) => element.contains(quadraString))
+                .toList();
+          } else {
+            listLocaisSearch = [];
+          }
+          setState(() {});
+        },
+        validator: (String value) {
+          if (value == null) {
+            return 'campo obrigatório';
+          }
+        });
+  }
+
+  Widget _buildLote() {
+    return DropdownSearch<String>(
+        mode: Mode.DIALOG,
+        showSelectedItems: true,
+        dropdownSearchDecoration: InputDecoration(
+          hintText: "Selecione um Lote",
+          labelText: "Lote",
+          contentPadding: EdgeInsets.fromLTRB(12, 12, 0, 0),
+          //border: OutlineInputBorder(),
+        ),
+        items: listLoteSearch,
+        showClearButton: true,
+        onChanged: (value) {
+          _lote = value;
+        },
+        validator: (String value) {
+          if (value == null) {
+            return 'campo obrigatório';
+          }
+        });
+  }
+
   Widget _buildLocais() {
     return DropdownSearch<String>(
       mode: Mode.DIALOG,
@@ -549,6 +613,7 @@ class _AcessoInicialPageState extends State<AcessoInicialPage> {
 
   Future getSetoresLocais() async {
     _carregando("Carregando...");
+
     try {
       final response = await http.get(
           Uri.parse('${baseUrl}Denuncia/listar_setores_locais'),
@@ -573,6 +638,17 @@ class _AcessoInicialPageState extends State<AcessoInicialPage> {
             listLocaisString.add(
                 "${_local.id} : ${_local.descricaoSetor} -> ${_local.descricao}");
           }
+
+          for (var _quadra in setorLocal.listQuadra) {
+            listQuadraString
+                .add("${_quadra.id} : (Quadra ${_quadra.descricao})");
+          }
+
+          for (var _lote in setorLocal.listLote) {
+            listLoteString.add(
+                "${_lote.id} : (Quadra ${_lote.descricaoQuadra}) -> Lote (${_lote.descricao})");
+          }
+
           Navigator.of(context).pop();
           setState(() {});
         } else {
@@ -617,6 +693,8 @@ class _AcessoInicialPageState extends State<AcessoInicialPage> {
           'Cpf': userPage.cpf,
           'Setor': _setor,
           'Local': _local,
+          'Quadra': _quadra,
+          'Lote': _lote,
           'DataNascimento': _dataNascimento,
           'NApartamentoCasa': _numero,
           'Telefone': _telefone,
@@ -748,6 +826,8 @@ class _AcessoInicialPageState extends State<AcessoInicialPage> {
                 _buildLabel('DADOS PESSOAIS'),
                 _buildSetores(),
                 _buildLocais(),
+                _buildQuadra(),
+                _buildLote(),
                 _buildDatanascimento(),
                 _buildNumero(),
                 _buildTelefone(),

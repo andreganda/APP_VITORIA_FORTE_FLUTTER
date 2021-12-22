@@ -1,8 +1,16 @@
 class SetoresLocais {
   List<ListSetores> listSetores;
   List<ListLocais> listLocais;
+  List<ListQuadra> listQuadra;
+  List<ListLote> listLote;
+  List<ListRua> listRua;
 
-  SetoresLocais({this.listSetores, this.listLocais});
+  SetoresLocais(
+      {this.listSetores,
+      this.listLocais,
+      this.listQuadra,
+      this.listLote,
+      this.listRua});
 
   SetoresLocais.fromJson(Map<String, dynamic> json) {
     if (json['listSetores'] != null) {
@@ -17,6 +25,26 @@ class SetoresLocais {
         listLocais.add(new ListLocais.fromJson(v));
       });
     }
+    if (json['listQuadra'] != null) {
+      listQuadra = new List<ListQuadra>();
+      json['listQuadra'].forEach((v) {
+        listQuadra.add(new ListQuadra.fromJson(v));
+      });
+    }
+
+    if (json['listLote'] != null) {
+      listLote = new List<ListLote>();
+      json['listLote'].forEach((v) {
+        listLote.add(new ListLote.fromJson(v));
+      });
+    }
+
+    if (json['listRua'] != null) {
+      listRua = [];
+      json['listRua'].forEach((v) {
+        listRua.add(new ListRua.fromJson(v));
+      });
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -26,6 +54,15 @@ class SetoresLocais {
     }
     if (this.listLocais != null) {
       data['listLocais'] = this.listLocais.map((v) => v.toJson()).toList();
+    }
+    if (this.listQuadra != null) {
+      data['listQuadra'] = this.listQuadra.map((v) => v.toJson()).toList();
+    }
+    if (this.listLote != null) {
+      data['listLote'] = this.listLote.map((v) => v.toJson()).toList();
+    }
+    if (this.listRua != null) {
+      data['listRua'] = this.listRua.map((v) => v.toJson()).toList();
     }
     return data;
   }
@@ -109,6 +146,125 @@ class ListLocais {
     data['dataCriacao'] = this.dataCriacao;
     data['descricaoCondominio'] = this.descricaoCondominio;
     data['descricaoSetor'] = this.descricaoSetor;
+    return data;
+  }
+}
+
+class ListLote {
+  int id;
+  int idCondominio;
+  int idQuadra;
+  String descricao;
+  int status;
+  String dataCriacao;
+  String descricaoCondominio;
+  String descricaoQuadra;
+
+  ListLote(
+      {this.id,
+      this.idCondominio,
+      this.idQuadra,
+      this.descricao,
+      this.status,
+      this.dataCriacao,
+      this.descricaoCondominio,
+      this.descricaoQuadra});
+
+  ListLote.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    idCondominio = json['idCondominio'];
+    idQuadra = json['idQuadra'];
+    descricao = json['descricao'];
+    status = json['status'];
+    dataCriacao = json['dataCriacao'];
+    descricaoCondominio = json['descricaoCondominio'];
+    descricaoQuadra = json['descricaoQuadra'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['idCondominio'] = this.idCondominio;
+    data['idQuadra'] = this.idQuadra;
+    data['descricao'] = this.descricao;
+    data['status'] = this.status;
+    data['dataCriacao'] = this.dataCriacao;
+    data['descricaoCondominio'] = this.descricaoCondominio;
+    data['descricaoQuadra'] = this.descricaoQuadra;
+    return data;
+  }
+}
+
+class ListQuadra {
+  int id;
+  int idCondominio;
+  String descricao;
+  int status;
+  String dataCriacao;
+  String descricaoCondominio;
+
+  ListQuadra(
+      {this.id,
+      this.idCondominio,
+      this.descricao,
+      this.status,
+      this.dataCriacao,
+      this.descricaoCondominio});
+
+  ListQuadra.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    idCondominio = json['idCondominio'];
+    descricao = json['descricao'];
+    status = json['status'];
+    dataCriacao = json['dataCriacao'];
+    descricaoCondominio = json['descricaoCondominio'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['idCondominio'] = this.idCondominio;
+    data['descricao'] = this.descricao;
+    data['status'] = this.status;
+    data['dataCriacao'] = this.dataCriacao;
+    data['descricaoCondominio'] = this.descricaoCondominio;
+    return data;
+  }
+}
+
+class ListRua {
+  int id;
+  int idCondominio;
+  String descricao;
+  int status;
+  String dataCriacao;
+  Null descricaoCondominio;
+
+  ListRua(
+      {this.id,
+      this.idCondominio,
+      this.descricao,
+      this.status,
+      this.dataCriacao,
+      this.descricaoCondominio});
+
+  ListRua.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    idCondominio = json['idCondominio'];
+    descricao = json['descricao'];
+    status = json['status'];
+    dataCriacao = json['dataCriacao'];
+    descricaoCondominio = json['descricaoCondominio'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['idCondominio'] = this.idCondominio;
+    data['descricao'] = this.descricao;
+    data['status'] = this.status;
+    data['dataCriacao'] = this.dataCriacao;
+    data['descricaoCondominio'] = this.descricaoCondominio;
     return data;
   }
 }

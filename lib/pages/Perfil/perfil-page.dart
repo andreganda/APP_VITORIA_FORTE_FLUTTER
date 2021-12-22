@@ -18,6 +18,7 @@ import 'package:flutter/widgets.dart';
 
 import '../../constants.dart';
 import '../index.dart';
+import 'minha-moradia-page.dart';
 
 class PerfilPage extends StatefulWidget {
   @override
@@ -38,6 +39,31 @@ class _PerfilPageState extends State<PerfilPage> {
     _getUser();
   }
 
+  Widget horizontalList1 = new Container(
+      margin: EdgeInsets.symmetric(vertical: 20.0),
+      height: 200.0,
+      child: new ListView(
+        scrollDirection: Axis.horizontal,
+        children: <Widget>[
+          Container(
+            width: 160.0,
+            color: Colors.red,
+          ),
+          Container(
+            width: 160.0,
+            color: Colors.orange,
+          ),
+          Container(
+            width: 160.0,
+            color: Colors.pink,
+          ),
+          Container(
+            width: 160.0,
+            color: Colors.yellow,
+          ),
+        ],
+      ));
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -50,55 +76,94 @@ class _PerfilPageState extends State<PerfilPage> {
       ),
       body: SingleChildScrollView(
         physics: ScrollPhysics(),
-        child: ListView(
-          shrinkWrap: true,
-          padding: EdgeInsets.symmetric(horizontal: 32),
-          physics: BouncingScrollPhysics(),
-          children: [
-            SizedBox(height: 24),
-            imageProfile(),
-            SizedBox(height: 24),
-            // Text(this.userPage.nome.toString()),
-            TextFieldWidget(
-              label: 'Nome:',
-              text: this.userPage.nome.toString(),
-            ),
-            SizedBox(height: 15),
-            TextFieldWidget(
-              label: 'CPF:',
-              text: this.userPage.cpf.toString(),
-            ),
-            SizedBox(height: 15),
-            TextFieldWidget(
-              label: 'Data Nascimento:',
-              text: this.userPage.dataNascimentoFormat.toString(),
-            ),
-            SizedBox(height: 15),
-            TextFieldWidget(
-              label: 'Email:',
-              text: this.userPage.email.toString(),
-            ),
-            SizedBox(height: 15),
-            TextFieldWidget(
-              label: 'Telefone:',
-              text: this.userPage.telefone.toString(),
-            ),
-            SizedBox(height: 15),
-            Container(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  _buildContainer(
-                      context, 'MEUS VEÍCULOS', FontAwesomeIcons.car, 1),
-                  _buildContainer(context, 'CONTATOS EMERGÊNCIA',
-                      FontAwesomeIcons.contao, 2),
-                ],
+        child: Padding(
+          padding: const EdgeInsets.all(15),
+          child: Column(
+            //mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(height: 24),
+              imageProfile(),
+              SizedBox(height: 24),
+              // Text(this.userPage.nome.toString()),
+              TextFieldWidget(
+                label: 'Nome:',
+                text: this.userPage.nome.toString(),
               ),
-            )
-          ],
+              SizedBox(height: 15),
+              TextFieldWidget(
+                label: 'CPF:',
+                text: this.userPage.cpf.toString(),
+              ),
+              SizedBox(height: 15),
+              // TextFieldWidget(
+              //   label: 'Data Nascimento:',
+              //   text: this.userPage.dataNascimentoFormat.toString(),
+              // ),
+              SizedBox(height: 15),
+              TextFieldWidget(
+                label: 'Email:',
+                text: this.userPage.email.toString(),
+              ),
+              SizedBox(height: 15),
+              // TextFieldWidget(
+              //   label: 'Telefone:',
+              //   text: this.userPage.telefone.toString(),
+              // ),
+              SizedBox(height: 15),
+              Container(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    _buildContainer(
+                        context, 'DADOS PESSOAIS', FontAwesomeIcons.userAlt, 4),
+                    _buildContainer(
+                        context, 'MINHA RESIDÊNCIA', FontAwesomeIcons.home, 3),
+                  ],
+                ),
+              ),
+              Container(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    _buildContainer(
+                        context, 'MEUS VEÍCULOS', FontAwesomeIcons.car, 1),
+                    _buildContainer(context, 'CONTATOS EMERGÊNCIA',
+                        FontAwesomeIcons.contao, 2),
+                  ],
+                ),
+              ),
+
+              //_buildListViewVeiculos()
+            ],
+          ),
         ),
       ),
     );
+  }
+
+  Widget _buildListViewVeiculos() {
+    return SizedBox(
+        height: MediaQuery.of(context).size.height * 0.25,
+        //width: MediaQuery.of(context).size.width * 0.3,
+        child: Center(
+          child: ListView(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.all(8),
+            children: <Widget>[
+              _buildContainer(
+                  context, 'DADOS PESSOAIS', FontAwesomeIcons.userAlt, 4),
+              _buildContainer(
+                  context, 'MINHA MORADIA', FontAwesomeIcons.home, 3),
+              _buildContainer(
+                  context, 'MEUS VEÍCULOS', FontAwesomeIcons.car, 1),
+              _buildContainer(
+                  context, 'CONTATOS EMERGÊNCIA', FontAwesomeIcons.contao, 2),
+            ],
+          ),
+        )
+        //isThreeLine: true,
+        );
   }
 
   Widget imageProfile() {
@@ -321,10 +386,14 @@ class _PerfilPageState extends State<PerfilPage> {
             Navigator.of(context).push(MaterialPageRoute(
                 builder: (context) => ContatosEmergenciaPage()));
           }
+          if (page == 3) {
+            Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => MinhaMoradiaPage()));
+          }
         },
         child: Container(
           height: MediaQuery.of(context).size.height * 0.17,
-          width: MediaQuery.of(context).size.width * 0.3,
+          width: MediaQuery.of(context).size.width * 0.4,
           decoration: BoxDecoration(
             color: Colors.red,
             border: Border.all(
