@@ -15,6 +15,7 @@ class Usuario {
   String telefone;
   String email;
   String dataCriacao;
+  String dataCriacaoFormat;
   String dataAlteracao;
   String cep;
   String logradouro;
@@ -77,9 +78,12 @@ class Usuario {
     primeiroAcesso = json['primeiroAcesso'];
 
     var parsedDate = DateTime.parse(dataNascimento);
+    var parsedDateCriacao = DateTime.parse(dataCriacao);
 
     final DateFormat formatter = DateFormat('dd/MM/yyyy');
     dataNascimentoFormat = formatter.format(parsedDate);
+
+    dataCriacaoFormat = formatter.format(parsedDateCriacao);
   }
 
   Map<String, dynamic> toJson() {

@@ -66,10 +66,10 @@ class _AcessoInicialPageState extends State<AcessoInicialPage> {
   List<String> listLoteString = [];
   List<String> listLoteSearch = [];
 
-  String _setor = "";
-  String _local = "";
-  String _quadra = "";
-  String _lote = "";
+  String _setor = "0";
+  String _local = "0";
+  String _quadra = "0";
+  String _lote = "0";
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -286,11 +286,6 @@ class _AcessoInicialPageState extends State<AcessoInicialPage> {
       decoration: InputDecoration(
         labelText: 'N° Apartamento/Casa',
       ),
-      validator: (String value) {
-        if (value.isEmpty) {
-          return 'campo obrigatório';
-        }
-      },
       onSaved: (String value) {
         _numero = value;
       },
@@ -499,11 +494,6 @@ class _AcessoInicialPageState extends State<AcessoInicialPage> {
       showClearButton: true,
       onChanged: (value) {
         _local = value;
-      },
-      validator: (String value) {
-        if (value == null) {
-          return 'campo obrigatório';
-        }
       },
     );
   }

@@ -44,6 +44,7 @@ class _MinhaMoradiaPageState extends State<MinhaMoradiaPage> {
   void initState() {
     detalhes = true;
     _getUser();
+    //getDetalhesMoradiaUsuario();
     super.initState();
   }
 
@@ -148,7 +149,12 @@ class _MinhaMoradiaPageState extends State<MinhaMoradiaPage> {
     return GestureDetector(
       onTap: () {
         detalhes = false;
-        setState(() {});
+        if (!_formKey.currentState.validate()) {
+          return;
+        } else {
+          _formKey.currentState.save();
+          _salvarMoradia();
+        }
       },
       child: Center(
         child: Container(
@@ -230,10 +236,12 @@ class _MinhaMoradiaPageState extends State<MinhaMoradiaPage> {
       if (response.statusCode == 200 || response.statusCode == 204) {
         if (response.body != "") {
           Map<String, dynamic> userMap = jsonDecode(response.body);
-          moradia = Moradia.fromJson(userMap);
+
+          setState(() {
+            moradia = Moradia.fromJson(userMap);
+          });
 
           Navigator.of(context).pop();
-          setState(() {});
         }
       } else {
         Navigator.of(context).pop();
@@ -283,16 +291,19 @@ class _MinhaMoradiaPageState extends State<MinhaMoradiaPage> {
     );
   }
 
-  _getUser() async {
+  Future _getUser() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     try {
       Map<String, dynamic> userMap = jsonDecode(prefs.getString('userJson'));
       Usuario user = new Usuario();
       user = Usuario.fromJson(userMap);
-      getDetalhesMoradiaUsuario();
-      setState(() {
-        userPage = user;
-      });
+      userPage = user;
+      if (detalhes) {
+        await getDetalhesMoradiaUsuario();
+      }
+      // setState(() {
+      //   userPage = user;
+      // });
     } catch (e) {}
   }
 
@@ -419,11 +430,6 @@ class _MinhaMoradiaPageState extends State<MinhaMoradiaPage> {
       onChanged: (value) {
         _local = value;
       },
-      validator: (String value) {
-        if (value == null) {
-          return 'campo obrigatório';
-        }
-      },
     );
   }
 
@@ -441,5 +447,77 @@ class _MinhaMoradiaPageState extends State<MinhaMoradiaPage> {
         _numero = value;
       },
     );
+  }
+
+  showAlertDialog(BuildContext context, String title, String text) {
+    Widget okButton = FlatButton(
+      child: Text("OK"),
+      onPressed: () {
+        Navigator.of(context).pop();
+      },
+    );
+    AlertDialog alerta = AlertDialog(
+      title: Text(title),
+      content: Text(text),
+      actions: [
+        okButton,
+      ],
+    );
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alerta;
+      },
+    );
+  }
+
+  _salvarMoradia() async {
+    _carregando("Salvando...");
+    try {
+      final response = await http.post(
+        Uri.parse('${baseUrl}Usuario/AlterarMoradiaMorador'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, String>{
+          'Cpf': userPage.cpf,
+          'Setor': _setor,
+          'Local': _local,
+          'Quadra': _quadra,
+          'Lote': _lote,
+          'NApartamentoCasa': _numero,
+        }),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 204) {
+        Navigator.of(context).pop();
+        if (response.body == "1") {
+          showAlertDialog(
+            context,
+            "Parabéns",
+            "Atualização realizada com sucesso.",
+          );
+        } else {
+          showAlertDialog(
+            context,
+            "OPSSS...",
+            "Parece que algo deu errado.",
+          );
+        }
+      } else {
+        Navigator.of(context).pop();
+        showAlertDialog(
+          context,
+          "Oppsss",
+          "Parece que nossos servidores não estão respondendo como esperado, tente novamente mais tarde.",
+        );
+      }
+    } catch (e) {
+      showAlertDialog(
+        context,
+        "Oppsss",
+        "Não conseguimos enviar seus dados de primeiro acesso, tente novamente.",
+      );
+    }
   }
 }

@@ -18,6 +18,7 @@ import 'package:flutter/widgets.dart';
 
 import '../../constants.dart';
 import '../index.dart';
+import 'minha-conta.dart';
 import 'minha-moradia-page.dart';
 
 class PerfilPage extends StatefulWidget {
@@ -85,7 +86,6 @@ class _PerfilPageState extends State<PerfilPage> {
               SizedBox(height: 24),
               imageProfile(),
               SizedBox(height: 24),
-              // Text(this.userPage.nome.toString()),
               TextFieldWidget(
                 label: 'Nome:',
                 text: this.userPage.nome.toString(),
@@ -96,27 +96,18 @@ class _PerfilPageState extends State<PerfilPage> {
                 text: this.userPage.cpf.toString(),
               ),
               SizedBox(height: 15),
-              // TextFieldWidget(
-              //   label: 'Data Nascimento:',
-              //   text: this.userPage.dataNascimentoFormat.toString(),
-              // ),
-              SizedBox(height: 15),
               TextFieldWidget(
                 label: 'Email:',
                 text: this.userPage.email.toString(),
               ),
               SizedBox(height: 15),
-              // TextFieldWidget(
-              //   label: 'Telefone:',
-              //   text: this.userPage.telefone.toString(),
-              // ),
               SizedBox(height: 15),
               Container(
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     _buildContainer(
-                        context, 'DADOS PESSOAIS', FontAwesomeIcons.userAlt, 4),
+                        context, 'MINHA CONTA', FontAwesomeIcons.userAlt, 4),
                     _buildContainer(
                         context, 'MINHA RESIDÊNCIA', FontAwesomeIcons.home, 3),
                   ],
@@ -133,8 +124,6 @@ class _PerfilPageState extends State<PerfilPage> {
                   ],
                 ),
               ),
-
-              //_buildListViewVeiculos()
             ],
           ),
         ),
@@ -389,6 +378,10 @@ class _PerfilPageState extends State<PerfilPage> {
           if (page == 3) {
             Navigator.of(context).push(
                 MaterialPageRoute(builder: (context) => MinhaMoradiaPage()));
+          }
+          if (page == 4) {
+            Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => MinhaContaPage()));
           }
         },
         child: Container(
