@@ -59,40 +59,42 @@ class _MinhaMoradiaPageState extends State<MinhaMoradiaPage> {
   }
 
   Widget _buildDetalhes() {
-    return Padding(
-      padding: const EdgeInsets.all(15),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          TextFieldWidget(
-            label: 'SETOR:',
-            text: moradia.setor,
-          ),
-          SizedBox(height: 24),
-          TextFieldWidget(
-            label: 'LOCAL:',
-            text: moradia.local,
-          ),
-          SizedBox(height: 24),
-          TextFieldWidget(
-            label: 'QUADRA:',
-            text: moradia.quadra,
-          ),
-          SizedBox(height: 24),
-          TextFieldWidget(
-            label: 'LOTE:',
-            text: moradia.lote,
-          ),
-          SizedBox(height: 24),
-          TextFieldWidget(label: 'RUA:', text: moradia.rua),
-          SizedBox(height: 24),
-          TextFieldWidget(
-            label: 'Nº LOGRADOURO:',
-            text: moradia.nLogradouro,
-          ),
-          SizedBox(height: 24),
-          _buildBtnAlterar()
-        ],
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(15),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            TextFieldWidget(
+              label: 'SETOR:',
+              text: moradia.setor,
+            ),
+            SizedBox(height: 24),
+            TextFieldWidget(
+              label: 'LOCAL:',
+              text: moradia.local,
+            ),
+            SizedBox(height: 24),
+            TextFieldWidget(
+              label: 'QUADRA:',
+              text: moradia.quadra,
+            ),
+            SizedBox(height: 24),
+            TextFieldWidget(
+              label: 'LOTE:',
+              text: moradia.lote,
+            ),
+            SizedBox(height: 24),
+            TextFieldWidget(label: 'RUA:', text: moradia.rua),
+            SizedBox(height: 24),
+            TextFieldWidget(
+              label: 'Nº LOGRADOURO:',
+              text: moradia.nLogradouro,
+            ),
+            SizedBox(height: 24),
+            _buildBtnAlterar()
+          ],
+        ),
       ),
     );
   }
@@ -220,7 +222,14 @@ class _MinhaMoradiaPageState extends State<MinhaMoradiaPage> {
           Navigator.of(context).pop();
         }
       }
-    } catch (e) {}
+    } catch (e) {
+      Navigator.of(context).pop();
+      showAlertDialog(
+        context,
+        "Oppppsss...",
+        "Parece que nossos servidores não estão respondendo bem.",
+      );
+    }
   }
 
   Future getDetalhesMoradiaUsuario() async {

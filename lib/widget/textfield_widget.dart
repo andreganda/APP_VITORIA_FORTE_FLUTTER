@@ -35,12 +35,17 @@ class _TextFieldWidgetState extends State<TextFieldWidget> {
         children: [
           Text(
             widget.label,
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: MediaQuery.of(context).size.width * 0.06,
+            ),
           ),
           const SizedBox(height: 8),
           Text(
             widget.text,
-            style: TextStyle(fontSize: 14),
+            style: TextStyle(
+              fontSize: MediaQuery.of(context).size.width * 0.05,
+            ),
           )
         ],
       );

@@ -89,7 +89,7 @@ class _VeiculosPageState extends State<VeiculosPage> {
 
   Widget _buildListViewVeiculos() {
     return SizedBox(
-      // height: 100,
+      height: MediaQuery.of(context).size.height * 0.6,
       child: ListView.builder(
         shrinkWrap: true,
         scrollDirection: Axis.vertical,

@@ -13,12 +13,12 @@ if (flutterRoot == null) {
 
 def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
 if (flutterVersionCode == null) {
-    flutterVersionCode = '2'
+    flutterVersionCode = '5'
 }
 
 def flutterVersionName = localProperties.getProperty('flutter.versionName')
 if (flutterVersionName == null) {
-    flutterVersionName = '4'
+    flutterVersionName = '3.0.2'
 }
 
 apply plugin: 'com.android.application'
@@ -43,12 +43,11 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId "com.flutter.integra_mobile.ganco.bits"
         minSdkVersion 16
         targetSdkVersion 30
-        versionCode 4
-        versionName "4"
+        versionCode 5
+        versionName "3.0.2"
     }
 
     signingConfigs {

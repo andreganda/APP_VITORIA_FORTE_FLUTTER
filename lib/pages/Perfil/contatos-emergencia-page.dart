@@ -112,7 +112,7 @@ class _ContatosEmergenciaPageState extends State<ContatosEmergenciaPage> {
 
   Widget _buildListViewContatos() {
     return SizedBox(
-      // height: 100,
+      height: MediaQuery.of(context).size.height * 0.5,
       child: ListView.builder(
         shrinkWrap: true,
         scrollDirection: Axis.vertical,
@@ -127,7 +127,7 @@ class _ContatosEmergenciaPageState extends State<ContatosEmergenciaPage> {
               subtitle: Text("${telefoneContato}"),
               leading: Icon(
                 Icons.person,
-                size: MediaQuery.of(context).size.height * 0.04,
+                size: MediaQuery.of(context).size.height * 0.05,
               ),
               trailing: Row(
                 mainAxisSize: MainAxisSize.min,
