@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:vitoria_forte/pages/login/login-page.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 // Esta classe permite acesso ao LocalHost com certificados HTTPS inválidos
 class MyHttpOverrides extends HttpOverrides {
@@ -13,8 +14,14 @@ class MyHttpOverrides extends HttpOverrides {
   }
 }
 
-void main() {
+void main() async {
+  await init();
   runApp(MyApp());
+}
+
+Future init() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
 }
 
 class MyApp extends StatelessWidget {

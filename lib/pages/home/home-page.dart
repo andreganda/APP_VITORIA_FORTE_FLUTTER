@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:vitoria_forte/pages/denunciar/denunciar-page.dart';
+//import 'package:geolocator/geolocator.dart';
+import 'package:vitoria_forte/Model/notification.dart';
+//import 'package:vitoria_forte/pages/denunciar/denunciar-page.dart';
 import 'package:vitoria_forte/pages/index.dart';
-import 'package:vitoria_forte/pages/panico/botao-panico.dart';
+//import 'package:vitoria_forte/pages/panico/botao-panico.dart';
 import 'package:vitoria_forte/widget/menu-widget.dart';
+//import 'package:firebase_messaging/firebase_messaging.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -12,8 +14,25 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  //final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
+  String notificationTitle = 'No Title';
+  String notificationBody = 'No Body';
+  String notificationData = 'No Data';
+
   @override
-  void initState() {}
+  void initState() {
+    final firebaseMessaging = FCM();
+    firebaseMessaging.setNotifications();
+    firebaseMessaging.streamCtlr.stream.listen(_changeData);
+    firebaseMessaging.bodyCtlr.stream.listen(_changeBody);
+    firebaseMessaging.titleCtlr.stream.listen(_changeTitle);
+
+    super.initState();
+  }
+
+  _changeData(String msg) => setState(() => notificationData = msg);
+  _changeBody(String msg) => setState(() => notificationBody = msg);
+  _changeTitle(String msg) => setState(() => notificationTitle = msg);
 
   @override
   Widget build(BuildContext context) {

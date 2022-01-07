@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "267346684294",
+    "project_id": "integramobile-bc63d",
+    "storage_bucket": "integramobile-bc63d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:267346684294:android:46c9687a13a09f8531a407",
+        "android_client_info": {
+          "package_name": "com.flutter.integra_mobile.ganco.bits"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "267346684294-1ocfdbo9b4ihqe3e7vm939vneg27fut5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCZut22sB20w1jtd_oxuXJvFcQ-OJM-9Jg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "267346684294-1ocfdbo9b4ihqe3e7vm939vneg27fut5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
