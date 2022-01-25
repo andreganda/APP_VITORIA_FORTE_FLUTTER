@@ -20,7 +20,6 @@ Future<void> onBackgroundMessage(RemoteMessage message) async {
 
 class FCM {
   final _firebaseMessaging = FirebaseMessaging.instance;
-
   final streamCtlr = StreamController<String>.broadcast();
   final titleCtlr = StreamController<String>.broadcast();
   final bodyCtlr = StreamController<String>.broadcast();
@@ -38,8 +37,9 @@ class FCM {
     terminateNotification();
 
     // With this token you can test it easily on your phone
-    final token =
-        _firebaseMessaging.getToken().then((value) => print('Token: $value'));
+    final token = _firebaseMessaging.getToken().then((value) {
+      //print('Token: $value');
+    });
   }
 
   forgroundNotification() {

@@ -12,6 +12,9 @@ import 'package:vitoria_forte/constants.dart';
 import 'package:vitoria_forte/pages/login/acesso-inicial-page.dart';
 import 'package:connectivity/connectivity.dart';
 
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+
 // import 'package:flutter/foundation.dart';
 // import 'package:flutter/material.dart';
 // import 'package:flutter/services.dart';
@@ -26,6 +29,10 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
   final Connectivity _connectivity = Connectivity();
   StreamSubscription<ConnectivityResult> _connectivitySubscription;
 
+  var token = "";
+
+  final _firebaseMessaging = FirebaseMessaging.instance;
+
   @override
   initState() {
     super.initState();
@@ -34,6 +41,10 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
 
     _connectivitySubscription =
         _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
+
+    _firebaseMessaging.getToken().then((value) {
+      token = value;
+    });
 
     initConnectivity();
     _getUser();
@@ -308,10 +319,8 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
           headers: <String, String>{
             'Content-Type': 'application/json; charset=UTF-8',
           },
-          body: jsonEncode(<String, String>{
-            'Cpf': login,
-            'Senha': senha,
-          }),
+          body: jsonEncode(
+              <String, String>{'Cpf': login, 'Senha': senha, 'Token': token}),
         );
 
         if (response.statusCode == 200 || response.statusCode == 204) {
@@ -513,6 +522,7 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
 
   _getUser() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
+
     try {
       Map<String, dynamic> userMap = jsonDecode(prefs.getString('userJson'));
       Usuario user = new Usuario();
@@ -661,7 +671,7 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
-        body: jsonEncode(<String, String>{'Cpf': login}),
+        body: jsonEncode(<String, String>{'Cpf': login, 'Token': token}),
       );
 
       if (response.statusCode == 200 || response.statusCode == 204) {
