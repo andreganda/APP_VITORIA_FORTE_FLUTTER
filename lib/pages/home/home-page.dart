@@ -59,6 +59,7 @@ class _HomePageState extends State<HomePage> {
               _buildContainer(
                   context, 'DENUNCIAR', FontAwesomeIcons.fileContract, 2),
               _buildContainer(context, 'PERFIL', FontAwesomeIcons.userAlt, 3),
+              _buildContainer(context, 'AVISOS', Icons.notifications, 4)
             ],
           ),
         ),

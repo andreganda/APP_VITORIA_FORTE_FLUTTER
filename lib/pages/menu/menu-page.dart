@@ -11,8 +11,9 @@ class MenuItems {
   static const botaoPanico = MenuItem('Socorro', Icons.dangerous);
   static const denuncia = MenuItem('Denunciar', Icons.contact_phone);
   static const perfil = MenuItem('Perfil', Icons.supervised_user_circle_sharp);
+  static const avisos = MenuItem('Avisos', Icons.notifications);
 
-  static const all = <MenuItem>[home, denuncia, botaoPanico, perfil];
+  static const all = <MenuItem>[home, denuncia, botaoPanico, perfil, avisos];
 }
 
 class MenuPage extends StatefulWidget {

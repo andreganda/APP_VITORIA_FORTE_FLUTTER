@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
+import 'package:vitoria_forte/pages/avisos/avisos-page.dart';
 import 'package:vitoria_forte/pages/denunciar/denunciar-page.dart';
 import 'package:vitoria_forte/pages/panico/botao-panico.dart';
 import 'Perfil/perfil-page.dart';
@@ -33,6 +34,9 @@ class _IndexPageState extends State<IndexPage> {
       }
       if (widget.currentPage == 3) {
         this.currentItem = MenuItems.perfil;
+      }
+      if (widget.currentPage == 4) {
+        this.currentItem = MenuItems.avisos;
       }
       widget.currentPage = null;
     }
@@ -70,6 +74,8 @@ class _IndexPageState extends State<IndexPage> {
         return DenunciarPage();
       case MenuItems.botaoPanico:
         return PanicoPage();
+      case MenuItems.avisos:
+        return AvisosPage();
     }
   }
 }

@@ -15,6 +15,6 @@ const mainColor = Color(0xff2470c7);
 // const baseUrl = url + "/api/";
 // const baseUrlHub = url + "/chatHub";
 
-const url = 'http://192.168.1.49:45456';
+const url = 'http://10.0.0.110:45456';
 const baseUrl = url + "/api/";
 const baseUrlHub = url + "/chatHub";

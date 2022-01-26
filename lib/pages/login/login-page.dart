@@ -190,20 +190,21 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
               FlatButton(
                 onPressed: () {
                   showModalBottomSheet(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.only(
-                          topRight: Radius.circular(30.0),
-                          topLeft: Radius.circular(30.0),
-                        ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.only(
+                        topRight: Radius.circular(30.0),
+                        topLeft: Radius.circular(30.0),
                       ),
-                      isDismissible: false,
-                      context: context,
-                      builder: (context) {
-                        return StatefulBuilder(builder:
-                            (BuildContext context, StateSetter setState) {
-                          return bottomSheetMenuRecuperarSenha(setState);
-                        });
+                    ),
+                    isDismissible: false,
+                    context: context,
+                    builder: (context) {
+                      return StatefulBuilder(builder:
+                          (BuildContext context, StateSetter setState) {
+                        return bottomSheetMenuRecuperarSenha(setState);
                       });
+                    },
+                  );
                 },
                 child: Text(
                   'Esqueci minha senha',
