@@ -8,6 +8,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:vitoria_forte/Model/SetoresLocais.dart';
 import 'package:vitoria_forte/Model/Usuario.dart';
+import 'package:vitoria_forte/Model/notification.dart';
 import 'package:vitoria_forte/widget/menu-widget.dart';
 
 import '../../constants.dart';
@@ -56,10 +57,21 @@ class _DenunciarPageState extends State<DenunciarPage> {
 
   @override
   void initState() {
+    final firebaseMessaging = FCM();
+    firebaseMessaging.setNotifications();
+    firebaseMessaging.bodyCtlr.stream.listen(_changeBody);
+
     _getUser();
     getSetoresLocais();
 
     super.initState();
+  }
+
+  _changeBody(String msg) {
+    setState(() {
+      //notificationBody = msg;
+      showAlertDialog(context, "Nova Notificação", msg);
+    });
   }
 
   @override

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:vitoria_forte/Model/Usuario.dart';
 import 'package:vitoria_forte/Model/aviso.dart';
+import 'package:vitoria_forte/Model/notification.dart';
 import 'package:vitoria_forte/pages/avisos/avisos-detalhes-page.dart';
 import 'package:vitoria_forte/widget/menu-widget.dart';
 import 'package:http/http.dart' as http;
@@ -20,8 +21,18 @@ List<Aviso> listaAvisos = <Aviso>[];
 class _AvisosPageState extends State<AvisosPage> {
   @override
   void initState() {
+    final firebaseMessaging = FCM();
+    firebaseMessaging.setNotifications();
+    firebaseMessaging.bodyCtlr.stream.listen(_changeBody);
     _getUser();
     super.initState();
+  }
+
+  _changeBody(String msg) {
+    setState(() {
+      //notificationBody = msg;
+      showAlertDialog(context, "Nova Notificação", msg);
+    });
   }
 
   @override
@@ -60,6 +71,28 @@ class _AvisosPageState extends State<AvisosPage> {
           ),
         ),
       ),
+    );
+  }
+
+  showAlertDialog(BuildContext context, String title, String text) {
+    Widget okButton = FlatButton(
+      child: Text("OK"),
+      onPressed: () {
+        Navigator.of(context).pop();
+      },
+    );
+    AlertDialog alerta = AlertDialog(
+      title: Text(title),
+      content: Text(text),
+      actions: [
+        okButton,
+      ],
+    );
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alerta;
+      },
     );
   }
 

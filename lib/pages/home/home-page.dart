@@ -15,40 +15,35 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   //final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
-  String notificationTitle = "";
-  String notificationBody = "";
-  String notificationData = "";
+  // String notificationTitle = "";
+  // String notificationBody = "";
+  // String notificationData = "";
 
   @override
   void initState() {
     final firebaseMessaging = FCM();
     firebaseMessaging.setNotifications();
-    firebaseMessaging.streamCtlr.stream.listen(_changeData);
+    //firebaseMessaging.streamCtlr.stream.listen(_changeData);
     firebaseMessaging.bodyCtlr.stream.listen(_changeBody);
-    firebaseMessaging.titleCtlr.stream.listen(_changeTitle);
-
+    //firebaseMessaging.titleCtlr.stream.listen(_changeTitle);
     super.initState();
   }
 
   // _changeData(String msg) {
-  //   setState(() { notificationData = msg});
-  //   }
-
-  _changeData(String msg) {
-    setState(() {
-      notificationData = msg;
-      //showAlertDialog(context, "Nova Notificação", msg);
-    });
-  }
+  //   setState(() {
+  //     notificationData = msg;
+  //     //showAlertDialog(context, "Nova Notificação", msg);
+  //   });
+  // }
 
   _changeBody(String msg) {
     setState(() {
-      notificationBody = msg;
+      //notificationBody = msg;
       showAlertDialog(context, "Nova Notificação", msg);
     });
   }
 
-  _changeTitle(String msg) => setState(() => notificationTitle = msg);
+  //_changeTitle(String msg) => setState(() => notificationTitle = msg);
 
   @override
   Widget build(BuildContext context) {

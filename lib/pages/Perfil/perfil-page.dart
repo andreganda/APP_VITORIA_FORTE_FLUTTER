@@ -10,6 +10,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:vitoria_forte/Model/ContatoEmergencia.dart';
 import 'package:vitoria_forte/Model/Usuario.dart';
+import 'package:vitoria_forte/Model/notification.dart';
 import 'package:vitoria_forte/pages/Perfil/contatos-emergencia-page.dart';
 import 'package:vitoria_forte/pages/Perfil/veiculos-page.dart';
 import 'package:vitoria_forte/widget/menu-widget.dart';
@@ -37,7 +38,16 @@ class _PerfilPageState extends State<PerfilPage> {
 
   @override
   void initState() {
+    final firebaseMessaging = FCM();
+    firebaseMessaging.setNotifications();
+    firebaseMessaging.bodyCtlr.stream.listen(_changeBody);
     _getUser();
+  }
+
+  _changeBody(String msg) {
+    setState(() {
+      showAlertDialog(context, "Nova Notificação", msg);
+    });
   }
 
   Widget horizontalList1 = new Container(
@@ -359,6 +369,28 @@ class _PerfilPageState extends State<PerfilPage> {
         }
       });
     } catch (e) {}
+  }
+
+  showAlertDialog(BuildContext context, String title, String text) {
+    Widget okButton = FlatButton(
+      child: Text("OK"),
+      onPressed: () {
+        Navigator.of(context).pop();
+      },
+    );
+    AlertDialog alerta = AlertDialog(
+      title: Text(title),
+      content: Text(text),
+      actions: [
+        okButton,
+      ],
+    );
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alerta;
+      },
+    );
   }
 
   Widget _buildContainer(
