@@ -15,9 +15,9 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   //final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
-  String notificationTitle = 'No Title';
-  String notificationBody = 'No Body';
-  String notificationData = 'No Data';
+  String notificationTitle = "";
+  String notificationBody = "";
+  String notificationData = "";
 
   @override
   void initState() {
@@ -30,8 +30,24 @@ class _HomePageState extends State<HomePage> {
     super.initState();
   }
 
-  _changeData(String msg) => setState(() => notificationData = msg);
-  _changeBody(String msg) => setState(() => notificationBody = msg);
+  // _changeData(String msg) {
+  //   setState(() { notificationData = msg});
+  //   }
+
+  _changeData(String msg) {
+    setState(() {
+      notificationData = msg;
+      //showAlertDialog(context, "Nova Notificação", msg);
+    });
+  }
+
+  _changeBody(String msg) {
+    setState(() {
+      notificationBody = msg;
+      showAlertDialog(context, "Nova Notificação", msg);
+    });
+  }
+
   _changeTitle(String msg) => setState(() => notificationTitle = msg);
 
   @override
@@ -66,6 +82,28 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
+}
+
+showAlertDialog(BuildContext context, String title, String text) {
+  Widget okButton = FlatButton(
+    child: Text("OK"),
+    onPressed: () {
+      Navigator.of(context).pop();
+    },
+  );
+  AlertDialog alerta = AlertDialog(
+    title: Text(title),
+    content: Text(text),
+    actions: [
+      okButton,
+    ],
+  );
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return alerta;
+    },
+  );
 }
 
 Widget _buildContainer(

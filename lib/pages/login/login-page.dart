@@ -666,6 +666,10 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
   }
 
   Future verifcarUsuarioLogado(String login, BuildContext context) async {
+    await _firebaseMessaging.getToken().then((value) {
+      token = value;
+    });
+
     try {
       final response = await http.post(
         Uri.parse('${baseUrl}Login/VerificarUsuarioLogado'),
