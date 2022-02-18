@@ -10,7 +10,7 @@ import 'package:vitoria_forte/Model/Usuario.dart';
 import 'package:vitoria_forte/pages/index.dart';
 import 'package:vitoria_forte/constants.dart';
 import 'package:vitoria_forte/pages/login/acesso-inicial-page.dart';
-import 'package:connectivity/connectivity.dart';
+// import 'package:connectivity/connectivity.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -25,9 +25,9 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
-  ConnectivityResult _connectionStatus = ConnectivityResult.none;
-  final Connectivity _connectivity = Connectivity();
-  StreamSubscription<ConnectivityResult> _connectivitySubscription;
+  // ConnectivityResult _connectionStatus = ConnectivityResult.none;
+  // final Connectivity _connectivity = Connectivity();
+  // StreamSubscription<ConnectivityResult> _connectivitySubscription;
 
   var token = "";
 
@@ -39,14 +39,15 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
 
     WidgetsBinding.instance.addObserver(this);
 
-    _connectivitySubscription =
-        _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
+    // _connectivitySubscription =
+    //     _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
 
     _firebaseMessaging.getToken().then((value) {
       token = value;
+      print("TOKEN: "+value);
     });
 
-    initConnectivity();
+    // initConnectivity();
     _getUser();
 
     //_determinePosition();
@@ -75,28 +76,28 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
     if (!isBackground) {}
   }
 
-  Future<void> initConnectivity() async {
-    ConnectivityResult result;
-    try {
-      result = await _connectivity.checkConnectivity();
-    } on PlatformException catch (e) {
-      print(e.toString());
-      return;
-    }
-    return _updateConnectionStatus(result);
-  }
+  // Future<void> initConnectivity() async {
+  //   ConnectivityResult result;
+  //   try {
+  //     result = await _connectivity.checkConnectivity();
+  //   } on PlatformException catch (e) {
+  //     print(e.toString());
+  //     return;
+  //   }
+  //   return _updateConnectionStatus(result);
+  // }
 
-  Future<void> _updateConnectionStatus(ConnectivityResult result) async {
-    var checkConect = await _connectivity.checkConnectivity();
+  // Future<void> _updateConnectionStatus(ConnectivityResult result) async {
+  //   var checkConect = await _connectivity.checkConnectivity();
 
-    if (checkConect.index != 2) {
-      _conectadoRede = true;
-    } else {
-      _conectadoRede = false;
-    }
+  //   if (checkConect.index != 2) {
+  //     _conectadoRede = true;
+  //   } else {
+  //     _conectadoRede = false;
+  //   }
 
-    setState(() {});
-  }
+  //   setState(() {});
+  // }
 
   var _login = TextEditingController();
   var _senha = TextEditingController();
@@ -108,7 +109,7 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
   bool _callCircular = false;
   bool _esqueciSenha = false;
   final focusNode = FocusNode();
-  bool _conectadoRede = false;
+  bool _conectadoRede = true;
   bool circularButtonRecuperarSenha = false;
   var _cpfRecuperarSenha = TextEditingController();
 
