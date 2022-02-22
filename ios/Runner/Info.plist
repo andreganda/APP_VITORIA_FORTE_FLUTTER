@@ -26,6 +26,10 @@
 	<false/>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>UIBackgroundModes</key>
+    <array>
+        <string>remote-notification</string>
+    </array>
 	<key>NSCameraUsageDescription</key>
 	<string>O aplicativo necessita de acesso a sua câmera para atualização de perfil.</string>
 	<key>NSLocationAlwaysUsageDescription</key>

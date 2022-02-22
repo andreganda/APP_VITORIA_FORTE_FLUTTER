@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:vitoria_forte/Model/Usuario.dart';
 import 'package:vitoria_forte/Model/aviso.dart';
 import 'package:vitoria_forte/Model/notification.dart';
+import 'package:vitoria_forte/Services/user-service.dart';
 import 'package:vitoria_forte/pages/avisos/avisos-detalhes-page.dart';
 import 'package:vitoria_forte/widget/menu-widget.dart';
 import 'package:http/http.dart' as http;
@@ -17,6 +18,7 @@ class AvisosPage extends StatefulWidget {
 
 Usuario userPage = new Usuario();
 List<Aviso> listaAvisos = <Aviso>[];
+UserService userService = UserService();
 
 class _AvisosPageState extends State<AvisosPage> {
   @override
@@ -54,16 +56,32 @@ class _AvisosPageState extends State<AvisosPage> {
             itemBuilder: (context, index) {
               var aviso = listaAvisos[index];
               return GestureDetector(
-                onTap: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => AvisosDetalhesPage(
-                            avisoParam: aviso,
-                          )));
+                onTap: () async {
+                  await userService.SetarNotificacaoComoLida(
+                          aviso.id, userPage.cpf)
+                      .then((value) {
+                    aviso.statusUserLido = 1;
+                    listaAvisos[index] = aviso;
+                    setState(() {});
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => AvisosDetalhesPage(
+                          avisoParam: aviso,
+                        ),
+                      ),
+                    );
+                  });
+                  //
                 },
                 child: Card(
                   child: ListTile(
-                    title: _builTitle(aviso.titulo.toUpperCase()),
-                    subtitle: _builSubTitle("Enviado em: " + aviso.dataFormat),
+                    title: _builTitle(
+                      aviso.titulo.toUpperCase(),
+                    ),
+                    subtitle: aviso.statusUserLido == 1
+                        ? _builSubTitle("Enviado em: " + aviso.dataFormat)
+                        : _builSubTitleNaoLido(
+                            "Enviado em: " + aviso.dataFormat + " - NÃO LIDO"),
                   ),
                 ),
               );
@@ -187,6 +205,17 @@ Widget _builSubTitle(titulo) {
     titulo,
     style: TextStyle(
       fontSize: 12,
+      fontWeight: FontWeight.bold,
+    ),
+  );
+}
+
+Widget _builSubTitleNaoLido(titulo) {
+  return Text(
+    titulo,
+    style: TextStyle(
+      fontSize: 13,
+      color: Colors.red,
       fontWeight: FontWeight.bold,
     ),
   );
