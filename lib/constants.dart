@@ -11,13 +11,14 @@ const mainColor = Color(0xff2470c7);
 // const baseUrlHub = "http://192.168.1.52:45457/chatHub";
 
 //EM PRODUÇÃO MUDAR SÓ VARIÁVEL -> URL.
-// const url = 'https://oaksolucoes.com.br';
-// const baseUrl = url + "/api/";
-// const baseUrlHub = url + "/chatHub";
+const url = 'https://oaksolucoes.com.br';
+const baseUrl = url + "/api/";
+const baseUrlHub = url + "/chatHub";
 
 // const url = 'https://oaksolucoes.azurewebsites.net';
 // const baseUrl = url + "/api/";
 // const baseUrlHub = url + "/chatHub";
-const url = 'http://10.0.0.109:45456';
-const baseUrl = url + "/api/";
-const baseUrlHub = url + "/chatHub";
+
+// const url = 'http://10.0.0.109:45456';
+// const baseUrl = url + "/api/";
+// const baseUrlHub = url + "/chatHub";
